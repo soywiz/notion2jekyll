@@ -10,14 +10,20 @@ import ru.gildor.coroutines.okhttp.*
 
 suspend fun main() {
     val notion = NotionAPI("secret_nss1EfFxsW2x5raz9TZ48VACglEK86YfqN8QqgxrbB0")
+    println(notion.databaseGet("38ceb3348ad54f64a743b3e2a3c5fd2c"))
+    /*
     notion.blocksChildren("60bac1b7f3864e919cc74a00b1a0b7c8").collect {
-        //println("it=$it")
-        println(it.toMarkdown())
-        println()
+        val markdown = it.toMarkdown().trim()
+        if (markdown.isNotEmpty()) {
+            //println("it=$it")
+            println(markdown)
+            println()
+        }
     }
-    //notion.databaseQuery("38ceb3348ad54f64a743b3e2a3c5fd2c").collect {
-    //    println("it=$it")
-    //}
+    notion.databaseQuery("38ceb3348ad54f64a743b3e2a3c5fd2c").collect {
+        println("it=$it")
+    }
+     */
     println("--------")
     //println(notion.databaseQuery("38ceb3348ad54f64a743b3e2a3c5fd2c").toList())
 }
@@ -25,10 +31,17 @@ suspend fun main() {
 val MediaTypeApplicationJson = "application/json".toMediaType()
 val objectMapper = jacksonObjectMapper()
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+
 
 class NotionAPI(private val bearer: String) {
     private val client = OkHttpClient()
     val notionVersion = "2022-06-28"
+
+    suspend fun databaseGet(id: String): Database? {
+        val body = request("databases/$id").body ?: return null
+        return objectMapper.readValue(body.string())
+    }
 
     suspend fun databaseQuery(id: String, query: Map<String, Any?> = mapOf()): Flow<NObject> = paginate<NObject> { cursor ->
         val rquery = query + LinkedHashMap<String, Any?>().apply {
@@ -73,6 +86,7 @@ class NotionAPI(private val bearer: String) {
     )
     @JsonSubTypes(
         JsonSubTypes.Type(value = Page::class, name = "page"),
+        JsonSubTypes.Type(value = Database::class, name = "database"),
         JsonSubTypes.Type(value = Block::class, name = "block"),
         JsonSubTypes.Type(value = PartialUser::class, name = "user"),
         JsonSubTypes.Type(value = ExternalImage::class, name = "external"),
@@ -84,7 +98,49 @@ class NotionAPI(private val bearer: String) {
         var extra: Map<String, Any?> = LinkedHashMap()
     }
 
-    data class PropInfo(val id: String)
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type",
+        visible = true,
+        defaultImpl = PropInfo::class,
+    )
+    @JsonSubTypes(
+        JsonSubTypes.Type(value = RichTextPropInfo::class, name = "rich_text"),
+        JsonSubTypes.Type(value = SelectPropInfo::class, name = "select"),
+        JsonSubTypes.Type(value = DatePropInfo::class, name = "date"),
+        JsonSubTypes.Type(value = TitlePropInfo::class, name = "title"),
+        JsonSubTypes.Type(value = MultiSelectPropInfo::class, name = "multi_select"),
+    )
+    open class PropInfo() {
+        var id: String = ""
+        var name: String = ""
+        var type: String = ""
+
+        @JsonUnwrapped
+        var extra: Map<String, Any?> = LinkedHashMap()
+
+        override fun toString(): String = "PropInfo(name=$name, type=$type, id=$id)"
+    }
+
+    open class BaseSelectPropInfo(): PropInfo() {
+        data class Option(val id: String, val name: String, val color: String)
+    }
+
+    data class RichTextPropInfo(val rich_text: Any?) : PropInfo()
+    data class DatePropInfo(val date: Any?) : PropInfo()
+    data class TitlePropInfo(val title: Any?) : PropInfo()
+
+
+    data class MultiSelectPropInfo(
+        val options: List<Option>
+    ) : BaseSelectPropInfo() {
+    }
+
+    data class SelectPropInfo(
+        val options: List<Option>
+    ) : BaseSelectPropInfo() {
+    }
 
     data class Page(
         val id: String,
@@ -98,6 +154,23 @@ class NotionAPI(private val bearer: String) {
         val properties: Map<String, PropInfo>,
     ) : NObject() {
     }
+
+    data class Database(
+        val id: String,
+        val cover: Image,
+        val icon: Image?,
+        val created_time: String,
+        val created_by: PartialUser,
+        val last_edited_time: String?,
+        val last_edited_by: PartialUser?,
+        val title: List<RichTextEntry>,
+        val description: List<RichTextEntry>,
+        val is_inline: Boolean,
+        val properties: Map<String, PropInfo>,
+        val parent: Any?, // Reference
+        val url: String,
+        val archived: Boolean,
+    ) : NObject()
 
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -301,22 +374,3 @@ class NotionAPI(private val bearer: String) {
         fun List<RichTextEntry>.toMarkdown(): String = map { it.toMarkdown() }.joinToString("")
     }
 }
-
-/*
-open class DynMap(val map: Map<String, Any?>) {
-    class Prop<T> {
-        operator fun getValue(obj: DynMap, prop: KProperty<*>): T {
-            return obj.map[prop.name] as T
-        }
-
-        operator fun setValue(obj: DynMap, prop: KProperty<*>, value: T) {
-            TODO()
-        }
-    }
-}
-
-open class QueryResult(map: Map<String, Any?>) : DynMap(map) {
-    val `object`: String by Prop()
-    val results: List<> by Prop()
-}
-*/
