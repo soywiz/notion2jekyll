@@ -10,6 +10,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import ru.gildor.coroutines.okhttp.*
 
 class NotionAPI(private val bearer: String) {
+    val mapper: ObjectMapper get() = objectMapper
+
     companion object {
         @PublishedApi internal val MediaTypeApplicationJson = "application/json".toMediaType()
         @PublishedApi internal val objectMapper = jacksonObjectMapper()

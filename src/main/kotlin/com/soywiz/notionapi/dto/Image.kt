@@ -14,7 +14,7 @@ open class Image {
 }
 
 data class ExternalImage(
-    val external: External,
+    var external: External,
 ) : Image() {
-    data class External(val url: String)
+    data class External(var url: String)
 }

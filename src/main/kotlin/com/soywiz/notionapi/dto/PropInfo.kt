@@ -30,15 +30,15 @@ open class PropInfo() {
 }
 
 abstract class BaseSelectPropInfo() : PropInfo() {
-    data class Option(val id: String?, val name: String?, val color: String?)
-    data class Select(val options: List<Option>)
+    data class Option(var id: String?, var name: String?, var color: String?)
+    data class Select(var options: List<Option>)
 }
 
-data class RichTextPropInfo(override var id: String, val rich_text: Any?) : PropInfo()
+data class RichTextPropInfo(override var id: String, var rich_text: Any?) : PropInfo()
 abstract class BaseDatePropInfo() : PropInfo()
-data class DatePropInfo(override var id: String, val date: Any?) : BaseDatePropInfo()
-data class CreatedDatePropInfo(override var id: String, val created_time: Any?) : BaseDatePropInfo()
-data class LastEditedTimeDatePropInfo(override var id: String, val last_edited_time: Any?) : BaseDatePropInfo()
-data class TitlePropInfo(override var id: String, val title: Any?) : PropInfo()
-data class MultiSelectPropInfo(override var id: String, val multi_select: Select?) : BaseSelectPropInfo()
-data class SelectPropInfo(override var id: String, val select: Select?) : BaseSelectPropInfo()
+data class DatePropInfo(override var id: String, var date: Any?) : BaseDatePropInfo()
+data class CreatedDatePropInfo(override var id: String, var created_time: Any?) : BaseDatePropInfo()
+data class LastEditedTimeDatePropInfo(override var id: String, var last_edited_time: Any?) : BaseDatePropInfo()
+data class TitlePropInfo(override var id: String, var title: Any?) : PropInfo()
+data class MultiSelectPropInfo(override var id: String, var multi_select: Select?) : BaseSelectPropInfo()
+data class SelectPropInfo(override var id: String, var select: Select?) : BaseSelectPropInfo()

@@ -1,6 +1,7 @@
 package com.soywiz.notionapi.dto
 
 import com.fasterxml.jackson.annotation.*
+import java.text.*
 import java.util.*
 
 @JsonTypeInfo(
@@ -28,56 +29,63 @@ open class PropertyItem(
     open fun toPlaintext(): String = toMarkdown()
 }
 
+fun Iterable<PropertyItem>.toMarkdown(): String = joinToString("") { it.toMarkdown() }
+fun Iterable<PropertyItem>.toPlaintext(): String = joinToString("") { it.toPlaintext() }
+
 open class BaseSelectPropertyItem(
 ) : PropertyItem() {
-    class Select(val id: String, val name: String, val color: String)
+    class Select(var id: String, var name: String, var color: String)
 }
 
 data class SelectPropertyItem(
-    val select: Select
+    var select: Select?
 ) : BaseSelectPropertyItem() {
-    override fun toMarkdown(): String = select.name
+    override fun toMarkdown(): String = select?.name ?: ""
 }
 
 data class MultiSelectPropertyItem(
-    val multi_select: List<Select>
+    var multi_select: List<Select>
 ) : BaseSelectPropertyItem() {
     override fun toMarkdown(): String = multi_select.joinToString(", ") { it.name }
 }
 
 data class RichTextPropertyItem(
-    val rich_text: RichTextEntry
+    var rich_text: RichTextEntry
 ) : PropertyItem() {
     override fun toMarkdown(): String = rich_text.toMarkdown()
     override fun toPlaintext(): String = rich_text.toPlaintext()
 }
 
 data class TitlePropertyItem(
-    val title: RichTextEntry
+    var title: RichTextEntry
 ) : PropertyItem() {
     override fun toMarkdown(): String = title.toMarkdown()
     override fun toPlaintext(): String = title.toPlaintext()
 }
 
 data class LastEditedTimePropertyItem(
-    val last_edited_time: Date
+    var last_edited_time: Date
 ) : PropertyItem() {
-    override fun toMarkdown(): String = last_edited_time.toString()
+    override fun toMarkdown(): String = last_edited_time.toCannonicalString()
 }
 
 data class CreatedTimePropertyItem(
-    val created_time: Date
+    var created_time: Date
 ) : PropertyItem() {
-    override fun toMarkdown(): String = created_time.toString()
+    override fun toMarkdown(): String = created_time.toCannonicalString()
 }
 
+fun Date.toCannonicalString(): String = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").also {
+    it.timeZone = TimeZone.getTimeZone("UTC")
+}.format(this)
+
 data class DatePropertyItem(
-    val date: DateInfo,
+    var date: DateInfo,
 ) : PropertyItem() {
     data class DateInfo(
-        val start: String,
-        val end: String? = null,
-        val time_zone: String? = null
+        var start: String,
+        var end: String? = null,
+        var time_zone: String? = null
     )
     override fun toMarkdown(): String = when {
         date.end != null -> "${date.start}-${date.end}"

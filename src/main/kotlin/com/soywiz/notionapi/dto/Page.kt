@@ -3,13 +3,13 @@ package com.soywiz.notionapi.dto
 import java.util.*
 
 data class Page(
-    val id: String,
-    val created_time: Date,
-    val last_edited_time: Date,
-    val created_by: PartialUser,
-    val last_edited_by: PartialUser,
-    val cover: Image?,
-    val archived: Boolean,
-    val url: String,
-    val properties: Map<String, PropInfo>,
+    var id: String,
+    var created_time: Date,
+    var last_edited_time: Date,
+    var created_by: PartialUser,
+    var last_edited_by: PartialUser,
+    var cover: Image?,
+    var archived: Boolean,
+    var url: String,
+    var properties: Map<String, PropInfo>,
 ) : NObject()

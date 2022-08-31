@@ -38,16 +38,18 @@ open class Block(
     open fun toMarkdown(): String = "Block($type)"
 }
 
-data class TableOfContentsBlock(val table_of_contents: TableOfContents) : Block() {
-    data class TableOfContents(val color: String)
+fun Iterable<Block>.toMarkdown() = joinToString("\n\n") { it.toMarkdown() }
+
+data class TableOfContentsBlock(var table_of_contents: TableOfContents) : Block() {
+    data class TableOfContents(var color: String)
 
     override fun toMarkdown(): String = "{:toc}"
 }
 
-data class ParagraphBlock(val paragraph: Paragraph) : Block() {
+data class ParagraphBlock(var paragraph: Paragraph) : Block() {
     data class Paragraph(
-        val rich_text: List<RichTextEntry>,
-        val color: String,
+        var rich_text: List<RichTextEntry>,
+        var color: String,
     ) {
         fun toMarkdown() = rich_text.toMarkdown()
     }
@@ -55,13 +57,13 @@ data class ParagraphBlock(val paragraph: Paragraph) : Block() {
     override fun toMarkdown(): String = paragraph.rich_text.toMarkdown()
 }
 
-abstract class HeadingBlock(val count: Int) : Block() {
-    abstract val heading: Heading
+abstract class HeadingBlock(var count: Int) : Block() {
+    abstract var heading: Heading
 
     data class Heading(
-        val rich_text: List<RichTextEntry>,
-        val is_toggleable: Boolean,
-        val color: String,
+        var rich_text: List<RichTextEntry>,
+        var is_toggleable: Boolean,
+        var color: String,
     ) {
         fun toMarkdown() = RichTextEntry.toMarkdown(rich_text)
     }
@@ -69,43 +71,43 @@ abstract class HeadingBlock(val count: Int) : Block() {
     override fun toMarkdown(): String = "#".repeat(count) + " " + heading.toMarkdown()
 }
 
-data class DividerBlock(val divider: Divider) : Block() {
+data class DividerBlock(var divider: Divider) : Block() {
     class Divider
 
     override fun toMarkdown(): String = "---"
 }
 
-data class VideoBlock(val video: Video) : Block() {
+data class VideoBlock(var video: Video) : Block() {
     data class Video(
-        val caption: List<RichTextEntry>,
-        val type: String,
-        val external: External?
+        var caption: List<RichTextEntry>,
+        var type: String,
+        var external: External?
     )
 
-    data class External(val url: String)
+    data class External(var url: String)
 
     override fun toMarkdown(): String = "<iframe width=\"420\" height=\"315\" src=\"${video.external?.url}\"></iframe>"
 }
 
-data class ImageBlock(val image: Image) : Block() {
+data class ImageBlock(var image: Image) : Block() {
     data class Image(
-        val caption: List<RichTextEntry>,
-        val type: String,
-        val file: File?
+        var caption: List<RichTextEntry>,
+        var type: String,
+        var file: ImageFile?
     )
 
-    data class File(var url: String, val expiry_time: String)
+    data class ImageFile(var url: String, var expiry_time: String)
 
     override fun toMarkdown(): String = "[${image.caption.toMarkdown()}](${image.file?.url})"
 }
 
 data class CodeBlock(
-    val code: Code
+    var code: Code
 ) : Block() {
     data class Code(
-        val caption: List<Any?>,
-        val rich_text: List<RichTextEntry>,
-        val language: String,
+        var caption: List<Any?>,
+        var rich_text: List<RichTextEntry>,
+        var language: String,
     )
 
     override fun toMarkdown(): String = buildString {
@@ -115,26 +117,26 @@ data class CodeBlock(
     }
 }
 
-data class Heading1Block(val heading_1: Heading) : HeadingBlock(1) {
-    override val heading get() = heading_1
+data class Heading1Block(var heading_1: Heading) : HeadingBlock(1) {
+    override var heading by ::heading_1
 }
 
-data class Heading2Block(val heading_2: Heading) : HeadingBlock(2) {
-    override val heading get() = heading_2
+data class Heading2Block(var heading_2: Heading) : HeadingBlock(2) {
+    override var heading by ::heading_2
 }
 
-data class Heading3Block(val heading_3: Heading) : HeadingBlock(3) {
-    override val heading get() = heading_3
+data class Heading3Block(var heading_3: Heading) : HeadingBlock(3) {
+    override var heading by ::heading_3
 }
 
-data class Heading4Block(val heading_4: Heading) : HeadingBlock(4) {
-    override val heading get() = heading_4
+data class Heading4Block(var heading_4: Heading) : HeadingBlock(4) {
+    override var heading by ::heading_4
 }
 
-data class Heading5Block(val heading_5: Heading) : HeadingBlock(5) {
-    override val heading get() = heading_5
+data class Heading5Block(var heading_5: Heading) : HeadingBlock(5) {
+    override var heading by ::heading_5
 }
 
-data class Heading6Block(val heading_6: Heading) : HeadingBlock(6) {
-    override val heading get() = heading_6
+data class Heading6Block(var heading_6: Heading) : HeadingBlock(6) {
+    override var heading by ::heading_6
 }

@@ -3,18 +3,18 @@ package com.soywiz.notionapi.dto
 import java.util.*
 
 data class Database(
-    val id: String,
-    val cover: Image,
-    val icon: Image?,
-    val created_time: Date,
-    val created_by: PartialUser,
-    val last_edited_time: Date?,
-    val last_edited_by: PartialUser?,
-    val title: List<RichTextEntry>,
-    val description: List<RichTextEntry>,
-    val is_inline: Boolean,
-    val properties: Map<String, PropInfo>,
-    val parent: Any?, // Reference
-    val url: String,
-    val archived: Boolean,
+    var id: String,
+    var cover: Image,
+    var icon: Image?,
+    var created_time: Date,
+    var created_by: PartialUser,
+    var last_edited_time: Date?,
+    var last_edited_by: PartialUser?,
+    var title: List<RichTextEntry>,
+    var description: List<RichTextEntry>,
+    var is_inline: Boolean,
+    var properties: Map<String, PropInfo>,
+    var parent: Any?, // Reference
+    var url: String,
+    var archived: Boolean,
 ) : NObject()

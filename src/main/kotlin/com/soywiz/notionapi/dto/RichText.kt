@@ -2,20 +2,20 @@ package com.soywiz.notionapi.dto
 
 
 data class RichTextEntry(
-    val plain_text: String,
-    val href: String?,
-    val annotations: Annotations,
-    val type: String, // text, mention, equation,
-    val text: Text?,
+    var plain_text: String,
+    var href: String?,
+    var annotations: Annotations,
+    var type: String, // text, mention, equation,
+    var text: Text?,
 ) {
-    data class Text(val content: String, val link: String?)
+    data class Text(var content: String, var link: String?)
     data class Annotations(
-        val bold: Boolean,
-        val italic: Boolean,
-        val strikethrough: Boolean,
-        val underline: Boolean,
-        val code: Boolean,
-        val color: String,
+        var bold: Boolean,
+        var italic: Boolean,
+        var strikethrough: Boolean,
+        var underline: Boolean,
+        var code: Boolean,
+        var color: String,
     )
 
     companion object {

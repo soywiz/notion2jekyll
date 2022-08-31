@@ -31,12 +31,12 @@ open class NObject {
 
 data class NListObject<T>(
     override var `object`: String,
-    val results: List<T>,
-    val next_cursor: String?,
-    val has_more: Boolean,
-    val type: String,
+    var results: List<T>,
+    var next_cursor: String?,
+    var has_more: Boolean,
+    var type: String,
 ) : NObject()
 
-data class NErrorObject(val status: Int, val code: String, val message: String) : NObject()
+data class NErrorObject(var status: Int, var code: String, var message: String) : NObject()
 
-class NError(val error: NErrorObject) : Throwable("$error")
+class NError(var error: NErrorObject) : Throwable("$error")
