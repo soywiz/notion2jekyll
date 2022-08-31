@@ -17,4 +17,7 @@ data class Database(
     var parent: Any?, // Reference
     var url: String,
     var archived: Boolean,
-) : NObject()
+) : NObject() {
+    val last_edited_time_sure: Date get() = last_edited_time ?: created_time
+
+}

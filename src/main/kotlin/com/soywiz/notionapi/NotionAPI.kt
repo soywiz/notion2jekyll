@@ -8,8 +8,9 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import ru.gildor.coroutines.okhttp.*
+import java.io.Closeable
 
-class NotionAPI(private val bearer: String) {
+class NotionAPI(private val bearer: String) : Closeable {
     val mapper: ObjectMapper get() = objectMapper
 
     companion object {
@@ -22,8 +23,8 @@ class NotionAPI(private val bearer: String) {
     private val client = OkHttpClient()
     val notionVersion = "2022-06-28"
 
-    suspend fun pageGet(pageId: String): Page? {
-        val body = request("pages/$pageId").body ?: return null
+    suspend fun pageGet(pageId: String): Page {
+        val body = request("pages/$pageId").bodyOrError()
         return objectMapper.readValue(body.string())
     }
 
@@ -31,8 +32,13 @@ class NotionAPI(private val bearer: String) {
         request("pages/$pageId/properties/$propertyId?page_size=1000" + (if (cursor != null) "&start_cursor=$cursor" else ""))
     }
 
-    suspend fun databaseGet(id: String): Database? {
-        val body = request("databases/$id").body ?: return null
+    fun Response.bodyOrError(): ResponseBody {
+        if (this.code >= 400) error("HTTP error code=$code, body=${this.body?.string()}")
+        return body ?: error("HTTP without body")
+    }
+
+    suspend fun databaseGet(id: String): Database {
+        val body = request("databases/$id").bodyOrError()
         return objectMapper.readValue(body.string())
     }
 
@@ -90,4 +96,8 @@ class NotionAPI(private val bearer: String) {
     }
 
     data class SimpleObject(val `object`: String? = null)
+
+    override fun close() {
+        client.dispatcher.executorService.shutdown()
+    }
 }

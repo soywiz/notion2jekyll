@@ -1,6 +1,7 @@
 package com.soywiz.notionapi.dto
 
 import com.fasterxml.jackson.annotation.*
+import com.soywiz.util.*
 import java.text.*
 import java.util.*
 
@@ -74,10 +75,6 @@ data class CreatedTimePropertyItem(
 ) : PropertyItem() {
     override fun toMarkdown(): String = created_time.toCannonicalString()
 }
-
-fun Date.toCannonicalString(): String = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").also {
-    it.timeZone = TimeZone.getTimeZone("UTC")
-}.format(this)
 
 data class DatePropertyItem(
     var date: DateInfo,
