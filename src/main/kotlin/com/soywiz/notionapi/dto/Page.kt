@@ -11,5 +11,5 @@ data class Page(
     var cover: Image?,
     var archived: Boolean,
     var url: String,
-    var properties: Map<String, PropInfo>,
+    var properties: Map<String, PropertyItem>,
 ) : NObject()

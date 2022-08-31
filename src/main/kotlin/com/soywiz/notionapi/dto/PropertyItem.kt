@@ -58,14 +58,14 @@ data class MultiSelectPropertyItem(
 }
 
 data class RichTextPropertyItem(
-    var rich_text: RichTextEntry
+    var rich_text: List<RichTextEntry>
 ) : PropertyItem() {
     override fun toMarkdown(): String = rich_text.toMarkdown()
     override fun toPlaintext(): String = rich_text.toPlaintext()
 }
 
 data class TitlePropertyItem(
-    var title: RichTextEntry
+    var title: List<RichTextEntry>
 ) : PropertyItem() {
     override fun toMarkdown(): String = title.toMarkdown()
     override fun toPlaintext(): String = title.toPlaintext()

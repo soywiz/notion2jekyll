@@ -29,10 +29,10 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
         suspend fun generate() {
             val now = System.currentTimeMillis()
             val fileTime = cachedFile.lastModified()
-            if (cachedFile.exists() && now < fileTime + 3600 * 1000) {
-                println("Database cached. File exists and modified in less than 1 hour now=$now, fileTime=$fileTime")
-                return
-            }
+            //if (cachedFile.exists() && now < fileTime + 3600 * 1000) {
+            //    println("Database cached. File exists and modified in less than 1 hour now=$now, fileTime=$fileTime")
+            //    return
+            //}
             println("Database not cached: now=$now, fileTime=$fileTime")
 
             val database = api.databaseGet(databaseId)
@@ -61,23 +61,29 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
         if (!cachedFile.exists() || cachedFile.lastModified() != last_edited_time.time) {
             println("Didn't hit cache for $cachedFile and ${last_edited_time.time}")
             val page = api.pageGet(pageId)
-            val props = page.properties.entries.associate {
-                val propList = api.pageGetProperty(pageId, it.value.id).toList()
-                //println("[PROP] : key[${it.key}]=${propList}")
-                it.key to propList
-            }
+            val props = page.properties
+            //val props = page.properties.entries.associate {
+            //    val propList = api.pageGetProperty(pageId, it.value.id).toList()
+            //    //println("[PROP] : key[${it.key}]=${propList}")
+            //    it.key to propList
+            //}
             val blocks = page.let { api.blocksChildren(pageId).toList() }
-            val pageInfo = PageInfo(page, props, blocks)
+            val pageInfo = PageInfo(page, blocks)
 
             val coverImage = (pageInfo.page.cover as? ExternalImage?)
 
             fun downloadImage(field: KMutableProperty0<String>) {
                 val url = URL(field.get())
-                val baseName = File(url.path).nameWithoutExtension
-                val ext = File(url.path).extension.takeIf { it.isNotBlank() } ?: "jpg"
+                val urlPath = File(url.path)
+                val baseName = File(url.path.replace("/", "-"))
+                    .nameWithoutExtension
+                    .replace("secure.notion-static.com-", "")
+                    .trim('-')
+                val ext = urlPath.extension.takeIf { it.isNotBlank() } ?: "jpg"
                 val fileName = "$baseName.$ext"
                 val localFile = File(imagesFolder, fileName)
                 if (!localFile.exists()) {
+                    println("downloadImage=$url")
                     localFile.writeBytes(url.readBytes())
                 }
                 field.set("/images/$fileName")
@@ -114,9 +120,11 @@ data class DatabaseInfo(
 
 data class PageInfo(
     val page: Page,
-    val props: Map<String, List<PropertyItem>>,
     val blocks: List<Block>
 ) {
+    @get:JsonIgnore
+    val props = page.properties.entries.associate { it.key to kotlin.collections.listOf(it.value) }
+
     inline fun <reified T> findPropOfType(): List<Map.Entry<String, List<PropertyItem>>> =
         props.entries.filter { it.value.first() is T }
 
@@ -164,6 +172,7 @@ data class PageInfo(
         (allImages + cover).filterNotNull()
     }
 
+    @get:JsonIgnore
     val contentMarkdown: String get() = blocks.toMarkdown()
 }
 

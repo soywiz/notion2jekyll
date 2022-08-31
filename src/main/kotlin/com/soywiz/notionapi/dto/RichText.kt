@@ -50,3 +50,4 @@ data class RichTextEntry(
 }
 
 fun List<RichTextEntry>.toMarkdown(): String = joinToString("") { it.toMarkdown() }
+fun List<RichTextEntry>.toPlaintext(): String = joinToString("") { it.toPlaintext() }

@@ -3,8 +3,11 @@ import com.soywiz.notionapi.*
 import java.io.*
 
 suspend fun main() {
-    NotionCachedAPI(NotionAPI("secret_nss1EfFxsW2x5raz9TZ48VACglEK86YfqN8QqgxrbB0")).use { notion ->
-        val posts = JekyllPosts(File("../soywiz.com"))
+    val jekyllRoot = File("../soywiz.com")
+    val cacheRoot = File(jekyllRoot, ".notion_cache")
+
+    NotionCachedAPI(NotionAPI("secret_nss1EfFxsW2x5raz9TZ48VACglEK86YfqN8QqgxrbB0"), cacheRoot).use { notion ->
+        val posts = JekyllPosts(jekyllRoot)
         val existingPages = posts.readAll().associateBy { it.notionPageId }
         val newPageInfos = arrayListOf<PageInfo>()
         val newPages = LinkedHashMap<String, JekyllNotionPage>()
