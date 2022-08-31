@@ -34,5 +34,15 @@ fun PageInfo.toFileWithFrontMatter(): FileWithFrontMatter {
         )
     }
     //println("file=$file")
-    return FileWithFrontMatter(headers, page.contentMarkdown, file)
+    val contentMarkdown = when (page.sponsor.toIntOrNull()) {
+        null -> page.contentMarkdown
+        else -> {
+            if (page.contentMarkdown.contains("\n---\n")) {
+                page.contentMarkdown.replaceFirst("\n---\n", "\n\$SPONSOR\$:\n") + "\n:\$\$\n"
+            } else {
+                "\n\$SPONSOR\$:\n" + page.contentMarkdown + "\n:\$\$\n"
+            }
+        }
+    }
+    return FileWithFrontMatter(headers, contentMarkdown, file)
 }

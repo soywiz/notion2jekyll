@@ -73,7 +73,9 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
 
             fun downloadImage(field: KMutableProperty0<String>) {
                 val url = URL(field.get())
-                val fileName = File(url.path).name
+                val baseName = File(url.path).nameWithoutExtension
+                val ext = File(url.path).extension.takeIf { it.isNotBlank() } ?: "jpg"
+                val fileName = "$baseName.$ext"
                 val localFile = File(imagesFolder, fileName)
                 if (!localFile.exists()) {
                     localFile.writeBytes(url.readBytes())
