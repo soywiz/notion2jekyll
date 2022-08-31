@@ -3,10 +3,10 @@ package com.soywiz.jekyllapi
 import com.soywiz.util.*
 import java.io.File
 
-class JekyllPosts(postsFolder: File = File("posts")) {
-    val postsFolder: File = postsFolder.canonicalFile
-    val draftsFolder: File = File(postsFolder, "../drafts").canonicalFile
-    val imagesFolder: File = File(postsFolder, "../images").canonicalFile
+class JekyllPosts(jekyllRoot: File = File(".")) {
+    val postsFolder: File = File(jekyllRoot, "posts").canonicalFile
+    val draftsFolder: File = File(jekyllRoot, "drafts").canonicalFile
+    val imagesFolder: File = File(jekyllRoot, "static/images").canonicalFile
     init {
         postsFolder.mkdirs()
         draftsFolder.mkdirs()

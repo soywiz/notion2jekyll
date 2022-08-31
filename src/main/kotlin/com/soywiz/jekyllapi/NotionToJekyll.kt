@@ -7,6 +7,7 @@ import java.io.*
 fun PageInfo.toFileWithFrontMatter(): FileWithFrontMatter {
     val page = this
     val published = page.published
+    val draft = page.draft
     val headers = mutableMapOf<String, Any?>(
         "layout" to "post",
         "title" to page.title,
@@ -19,7 +20,7 @@ fun PageInfo.toFileWithFrontMatter(): FileWithFrontMatter {
         "tags" to page.tags.split(",").map { it.trim() },
     )
 
-    val file = if (published == null) {
+    val file = if (published == null || draft) {
         File("../drafts/%s.md".format(page.permalink))
     } else {
         File(

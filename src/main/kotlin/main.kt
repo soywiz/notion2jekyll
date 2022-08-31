@@ -4,7 +4,7 @@ import java.io.*
 
 suspend fun main() {
     NotionCachedAPI(NotionAPI("secret_nss1EfFxsW2x5raz9TZ48VACglEK86YfqN8QqgxrbB0")).use { notion ->
-        val posts = JekyllPosts(File("../soywiz.com/posts"))
+        val posts = JekyllPosts(File("../soywiz.com"))
         val existingPages = posts.readAll().associateBy { it.notionPageId }
         val newPageInfos = arrayListOf<PageInfo>()
         val newPages = LinkedHashMap<String, JekyllNotionPage>()

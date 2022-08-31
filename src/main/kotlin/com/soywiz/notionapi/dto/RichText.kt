@@ -8,7 +8,10 @@ data class RichTextEntry(
     var type: String, // text, mention, equation,
     var text: Text?,
 ) {
-    data class Text(var content: String, var link: String?)
+    data class Text(
+        var content: String,
+        var link: Link?
+    )
     data class Annotations(
         var bold: Boolean,
         var italic: Boolean,
@@ -16,6 +19,10 @@ data class RichTextEntry(
         var underline: Boolean,
         var code: Boolean,
         var color: String,
+    )
+
+    data class Link(
+        val url: String
     )
 
     companion object {
@@ -27,6 +34,7 @@ data class RichTextEntry(
         if (annotations.strikethrough) append("~~")
         if (annotations.bold) append("**")
         if (annotations.italic) append("_")
+        if (href != null) append("[")
         if (annotations.underline) append("<ins>")
         if (annotations.color != "default") append("<span style='color:${annotations.color}' markdown=1>")
         if (annotations.code) append("<code>")
@@ -34,6 +42,7 @@ data class RichTextEntry(
         if (annotations.code) append("</code>")
         if (annotations.color != "default") append("</span>")
         if (annotations.underline) append("</ins>")
+        if (href != null) append("]($href)")
         if (annotations.italic) append("_")
         if (annotations.bold) append("**")
         if (annotations.strikethrough) append("~~")

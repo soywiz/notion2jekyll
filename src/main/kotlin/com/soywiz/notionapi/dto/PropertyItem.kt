@@ -20,6 +20,7 @@ import java.util.*
     JsonSubTypes.Type(value = CreatedTimePropertyItem::class, name = "created_time"),
     JsonSubTypes.Type(value = DatePropertyItem::class, name = "date"),
     JsonSubTypes.Type(value = SelectPropertyItem::class, name = "select"),
+    JsonSubTypes.Type(value = CheckboxPropertyItem::class, name = "checkbox"),
 )
 open class PropertyItem(
 ) : NObject() {
@@ -42,6 +43,12 @@ data class SelectPropertyItem(
     var select: Select?
 ) : BaseSelectPropertyItem() {
     override fun toMarkdown(): String = select?.name ?: ""
+}
+
+data class CheckboxPropertyItem(
+    var checkbox: Boolean?
+) : BaseSelectPropertyItem() {
+    override fun toMarkdown(): String = checkbox.toString()
 }
 
 data class MultiSelectPropertyItem(

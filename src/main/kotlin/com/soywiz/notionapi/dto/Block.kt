@@ -43,7 +43,7 @@ fun Iterable<Block>.toMarkdown() = joinToString("\n\n") { it.toMarkdown() }
 data class TableOfContentsBlock(var table_of_contents: TableOfContents) : Block() {
     data class TableOfContents(var color: String)
 
-    override fun toMarkdown(): String = "{:toc}"
+    override fun toMarkdown(): String = "## Table of Contents\n{:toc}"
 }
 
 data class ParagraphBlock(var paragraph: Paragraph) : Block() {
@@ -86,7 +86,10 @@ data class VideoBlock(var video: Video) : Block() {
 
     data class External(var url: String)
 
-    override fun toMarkdown(): String = "<iframe width=\"420\" height=\"315\" src=\"${video.external?.url}\"></iframe>"
+    override fun toMarkdown(): String {
+        val url = video.external?.url?.replace("watch?v=", "embed/")
+        return """<iframe width="560" height="315" src="$url" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>"""
+    }
 }
 
 data class ImageBlock(var image: Image) : Block() {
@@ -98,7 +101,7 @@ data class ImageBlock(var image: Image) : Block() {
 
     data class ImageFile(var url: String, var expiry_time: String)
 
-    override fun toMarkdown(): String = "[${image.caption.toMarkdown()}](${image.file?.url})"
+    override fun toMarkdown(): String = "![${image.caption.toMarkdown()}](${image.file?.url})"
 }
 
 data class CodeBlock(

@@ -78,7 +78,7 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
                 if (!localFile.exists()) {
                     localFile.writeBytes(url.readBytes())
                 }
-                field.set("images/$fileName")
+                field.set("/images/$fileName")
 
             }
 
@@ -137,6 +137,8 @@ data class PageInfo(
         //println("propsLC[\"published\"]=${propsLC["published"]}")
         if (it.isBlank()) null else DateParse(it)
     }
+    @get:JsonIgnore
+    val draft: Boolean get() = propsLC["draft"]?.toPlaintext() == "true"
     @get:JsonIgnore
     val tags: String get() = propsLC["tags"]?.toPlaintext() ?: ""
 
