@@ -12,7 +12,7 @@ fun PageInfo.toFileWithFrontMatter(): FileWithFrontMatter {
         "title" to page.title,
         "notion_page_id" to page.page.id,
         "permalink" to "/" + page.permalink.trim('/') + "/",
-        "sponsor" to page.sponsor.toIntOrNull(),
+        "sponsor_tier" to page.sponsor.toIntOrNull(),
         "category" to page.category,
         "date" to published,
         "feature_image" to page.featured?.let { "/" + it.trim('/') },

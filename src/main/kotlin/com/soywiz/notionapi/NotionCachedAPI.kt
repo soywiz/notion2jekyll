@@ -147,7 +147,7 @@ data class PageInfo(
 
     @get:JsonIgnore
     val allImages: List<String> by lazy {
-        blocks.filterIsInstance<ImageBlock>().map { it.image?.file?.url }.filterNotNull()
+        blocks.filterIsInstance<ImageBlock>().mapNotNull { it.image?.file?.url }
     }
 
     @get:JsonIgnore
