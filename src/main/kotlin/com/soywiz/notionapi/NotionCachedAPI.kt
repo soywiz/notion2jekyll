@@ -44,7 +44,7 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
                 println("Database pages not cached")
                 val pages = api.databaseQuery(databaseId)
                 val databaseInfo = DatabaseInfo(database, pages.toList().filterIsInstance<Page>())
-                cachedFile.writeText(api.mapper.writeValueAsString(databaseInfo))
+                cachedFile.writeText(api.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(databaseInfo))
             }
 
             cachedFile.setLastModified(now)
@@ -91,7 +91,7 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
                 downloadImage(ifile::url)
             }
 
-            val pageInfoString = api.mapper.writeValueAsString(pageInfo)
+            val pageInfoString = api.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(pageInfo)
             cachedFile.writeText(pageInfoString)
             val newPage = api.mapper.readValue(cachedFile.readText(), PageInfo::class.java)
             //println("$page,$newPage")
@@ -139,10 +139,25 @@ data class PageInfo(
     }
     @get:JsonIgnore
     val tags: String get() = propsLC["tags"]?.toPlaintext() ?: ""
+
     @get:JsonIgnore
     val cover: String? by lazy {
         (page.cover as? ExternalImage?)?.external?.url
-            ?: blocks.filterIsInstance<ImageBlock>().firstOrNull()?.image?.file?.url
+    }
+
+    @get:JsonIgnore
+    val allImages: List<String> by lazy {
+        blocks.filterIsInstance<ImageBlock>().map { it.image?.file?.url }.filterNotNull()
+    }
+
+    @get:JsonIgnore
+    val featured: String? by lazy {
+        cover ?: allImages.firstOrNull()
+    }
+
+    @get:JsonIgnore
+    val allImagesAndCover: List<String> by lazy {
+        (allImages + cover).filterNotNull()
     }
 
     val contentMarkdown: String get() = blocks.toMarkdown()

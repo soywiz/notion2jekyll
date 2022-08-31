@@ -112,8 +112,8 @@ data class CodeBlock(
 
     override fun toMarkdown(): String = buildString {
         append("```${code.language}\n")
-        append(code.rich_text.toMarkdown())
-        append("```")
+        append(code.rich_text.toMarkdown().trim())
+        append("\n```")
     }
 }
 

@@ -8,13 +8,14 @@ fun PageInfo.toFileWithFrontMatter(): FileWithFrontMatter {
     val page = this
     val published = page.published
     val headers = mutableMapOf<String, Any?>(
+        "layout" to "post",
         "title" to page.title,
         "notion_page_id" to page.page.id,
         "permalink" to "/" + page.permalink.trim('/') + "/",
         "sponsor" to page.sponsor.toIntOrNull(),
         "category" to page.category,
         "date" to published,
-        "feature_image" to page.cover?.let { "/" + it.trim('/') },
+        "feature_image" to page.featured?.let { "/" + it.trim('/') },
         "tags" to page.tags.split(",").map { it.trim() },
     )
 

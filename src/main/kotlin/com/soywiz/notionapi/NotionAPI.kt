@@ -48,7 +48,7 @@ class NotionAPI(private val bearer: String) : Closeable {
             if (cursor != null) this["start_cursor"] = cursor
         }
         //println("QUERY: $rquery")
-        request("databases/$id/query", body = objectMapper.writeValueAsString(rquery).toRequestBody(MediaTypeApplicationJson))
+        request("databases/$id/query", body = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rquery).toRequestBody(MediaTypeApplicationJson))
     }
 
     suspend fun blocksChildren(blockId: String): Flow<Block> = paginate<Block> { cursor ->
