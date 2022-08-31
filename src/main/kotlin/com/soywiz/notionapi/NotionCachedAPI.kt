@@ -131,12 +131,12 @@ data class PageInfo(
     @get:JsonIgnore
     val created: Date get() = DateParse(findPropOfType<CreatedTimePropertyItem>().firstOrNull()?.value?.toPlaintext() ?: "")
     @get:JsonIgnore
-    val published: Date get() = propsLC["published"]?.toPlaintext()?.substringBefore('+')?.let {
+    val published: Date? get() = propsLC["published"]?.toPlaintext()?.substringBefore('+')?.let {
         //println("page.id=${page.id}")
         //println("propsLC[\"published\"]?.toPlaintext()=${propsLC["published"]?.toPlaintext()}")
         //println("propsLC[\"published\"]=${propsLC["published"]}")
-        DateParse(it)
-    } ?: created
+        if (it.isBlank()) null else DateParse(it)
+    }
     @get:JsonIgnore
     val tags: String get() = propsLC["tags"]?.toPlaintext() ?: ""
     @get:JsonIgnore

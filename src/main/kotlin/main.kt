@@ -15,19 +15,33 @@ suspend fun main() {
         }
     }
 
-    println("existingPages=$existingPages")
-    println("newPages=$newPages")
+    val removedIds = existingPages.keys - newPages.keys
+    val addedIds = newPages.keys - existingPages.keys
+    val keptIds = newPages.keys.intersect(existingPages.keys)
 
-    /*
-                val oldPage = existingPages[npage.page.id]
-            //println(page.props)
-            if (oldPage != null && oldPage.file.file != page.file.file) {
-                println("Deleted old file. Moved from '${oldPage.file.file}' to '${page.file.file}'")
-                posts.delete(oldPage)
-            }
-            posts.write(page)
+    println("removedIds=$removedIds")
+    println("addedIds=$addedIds")
+    println("keptIds=$keptIds")
 
-     */
+    // Remove pages
+    for (id in removedIds) {
+        val page = existingPages[id]!!
+        posts.delete(page)
+    }
 
-    println("--------")
+    // Add pages
+    for (id in addedIds) {
+        val page = newPages[id]!!
+        posts.write(page)
+    }
+
+    // Updated pages
+    for (id in keptIds) {
+        val oldPage = existingPages[id]!!
+        val newPage = newPages[id]!!
+        if (oldPage.file.file != newPage.file.file) {
+            posts.delete(oldPage)
+        }
+        posts.write(newPage)
+    }
 }

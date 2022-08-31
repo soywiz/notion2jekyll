@@ -5,16 +5,23 @@ import java.io.File
 
 class JekyllPosts(postsFolder: File = File("posts")) {
     val postsFolder: File = postsFolder.canonicalFile
+    val draftsFolder: File = File(postsFolder, "../drafts").canonicalFile
+    init {
+        postsFolder.mkdirs()
+        draftsFolder.mkdirs()
+    }
     fun readAll(): List<JekyllNotionPage> = buildList {
-        for (file in postsFolder.walkBottomUp()) {
-            when (file.extension.lowercase()) {
-                "md", "markdown" -> {
-                    val fileRelative = file.relativeTo(postsFolder)
-                    val page = JekyllNotionPage(file.readText(), fileRelative)
-                    //println("file: ${matter.headerRaw}")
-                    if (page.notionPageId != null) {
-                        add(page)
-                        //add("notionPageId=${page.notionPageId}, title=${page.title}, file=${fileRelative}, headers=${page.headers}")
+        for (folder in listOf(draftsFolder, postsFolder)) {
+            for (file in folder.walkBottomUp()) {
+                when (file.extension.lowercase()) {
+                    "md", "markdown" -> {
+                        val fileRelative = file.relativeTo(postsFolder)
+                        val page = JekyllNotionPage(file.readText(), fileRelative)
+                        //println("file: ${matter.headerRaw}")
+                        if (page.notionPageId != null) {
+                            add(page)
+                            //add("notionPageId=${page.notionPageId}, title=${page.title}, file=${fileRelative}, headers=${page.headers}")
+                        }
                     }
                 }
             }
@@ -66,7 +73,8 @@ data class FileWithFrontMatter(val headers: MutableMap<String, Any?>, val bodyRa
             appendLine("---")
             appendLine(YAML.dump(headers).trim())
             appendLine("---")
-            append(bodyRaw)
+            appendLine("")
+            append(bodyRaw.trim())
         }
     }
 

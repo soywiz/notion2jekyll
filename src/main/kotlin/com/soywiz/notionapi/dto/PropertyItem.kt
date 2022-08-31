@@ -77,7 +77,7 @@ data class CreatedTimePropertyItem(
 }
 
 data class DatePropertyItem(
-    var date: DateInfo,
+    var date: DateInfo?,
 ) : PropertyItem() {
     data class DateInfo(
         var start: String,
@@ -85,7 +85,8 @@ data class DatePropertyItem(
         var time_zone: String? = null
     )
     override fun toMarkdown(): String = when {
-        date.end != null -> "${date.start}-${date.end}"
-        else -> date.start
+        date == null -> ""
+        date!!.end != null -> "${date!!.start}-${date!!.end}"
+        else -> date!!.start
     }
 }
