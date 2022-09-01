@@ -17,7 +17,7 @@ fun PageInfo.toFileWithFrontMatter(): FileWithFrontMatter {
         "category" to page.category,
         "date" to published,
         "feature_image" to page.featured?.let { "/" + it.trim('/') },
-        "tags" to page.tags.split(",").map { it.trim() },
+        "tags" to (page.tags.takeIf { it.isNotBlank() }?.split(",")?.map { it.trim() } ?: emptyList()),
     )
 
     val file = if (published == null || draft) {
