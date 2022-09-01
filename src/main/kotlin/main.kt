@@ -30,18 +30,21 @@ suspend fun main() {
         println("keptIds=$keptIds")
 
         // Remove pages
+        println("Deleting old pages [${removedIds.size}]...$removedIds")
         for (id in removedIds) {
             val page = existingPages[id]!!
             posts.delete(page)
         }
 
         // Add pages
+        println("Adding new pages [${addedIds.size}]...$addedIds")
         for (id in addedIds) {
             val page = newPages[id]!!
             posts.write(page)
         }
 
         // Updated pages
+        println("Keeping/Updating pages [${keptIds.size}]...$keptIds")
         for (id in keptIds) {
             val oldPage = existingPages[id]!!
             val newPage = newPages[id]!!
@@ -52,13 +55,14 @@ suspend fun main() {
         }
 
         // Ensure images are copied
+        println("Copying images [${newPageInfos.size}]...")
         for (page in newPageInfos) {
             for (image in page.allImagesAndCover) {
                 val baseFileName = File(image).name
                 val fromImageFile = File(notion.imagesFolder, baseFileName)
                 val intoImageFile = File(posts.imagesFolder, baseFileName)
-                println("fromImageFile=$fromImageFile, intoImageFile=$intoImageFile")
                 if (!intoImageFile.exists()) {
+                    println("fromImageFile=$fromImageFile, intoImageFile=$intoImageFile")
                     fromImageFile.copyTo(intoImageFile, overwrite = true)
                 }
             }

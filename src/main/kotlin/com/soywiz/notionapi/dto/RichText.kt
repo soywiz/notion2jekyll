@@ -7,10 +7,18 @@ data class RichTextEntry(
     var annotations: Annotations,
     var type: String, // text, mention, equation,
     var text: Text?,
+    var equation: Equation?,
+    var mention: Mention?,
 ) {
     data class Text(
         var content: String,
         var link: Link?
+    )
+    data class Equation(
+        val expression: String
+    )
+    data class Mention(
+        val mention: Any? // @TODO
     )
     data class Annotations(
         var bold: Boolean,
@@ -34,15 +42,19 @@ data class RichTextEntry(
         if (annotations.strikethrough) append("~~")
         if (annotations.bold) append("**")
         if (annotations.italic) append("_")
-        if (href != null) append("[")
+        if (href != null && plain_text != href) append("[")
         if (annotations.underline) append("<ins>")
         if (annotations.color != "default") append("<span style='color:${annotations.color}' markdown=1>")
-        if (annotations.code) append("<code>")
-        append(plain_text)
-        if (annotations.code) append("</code>")
+        if (annotations.code) append("`")
+        if (href == plain_text) {
+            append("<${plain_text}>")
+        } else {
+            append(plain_text)
+        }
+        if (annotations.code) append("`")
         if (annotations.color != "default") append("</span>")
         if (annotations.underline) append("</ins>")
-        if (href != null) append("]($href)")
+        if (href != null && plain_text != href) append("]($href)")
         if (annotations.italic) append("_")
         if (annotations.bold) append("**")
         if (annotations.strikethrough) append("~~")
