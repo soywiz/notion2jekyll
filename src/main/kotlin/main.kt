@@ -2,10 +2,11 @@ import com.soywiz.jekyllapi.*
 import com.soywiz.notionapi.*
 import java.io.*
 
-suspend fun main() {
-    val jekyllRoot = File("../soywiz.com")
-    val notionSecret = "secret_nss1EfFxsW2x5raz9TZ48VACglEK86YfqN8QqgxrbB0"
-    val databaseId = "38ceb3348ad54f64a743b3e2a3c5fd2c"
+suspend fun main(args: Array<String>) {
+    val jekyllRoot = File(args.lastOrNull() ?: ".")
+    val notionSecret = System.getenv("NOTION_SECRET") ?: error("NOTION_SECRET environment variable not set")
+    val databaseId = System.getenv("NOTION_DATABASE_ID") ?: error("NOTION_DATABASE_ID environment variable not set")
+    if (!File(jekyllRoot, "posts").exists()) error("Folder '$jekyllRoot' doesn't contain a 'posts' folder. Potentially not a jekyll site")
 
     NotionCachedAPI(NotionAPI(notionSecret), File(jekyllRoot, ".notion_cache")).use { notion ->
         val posts = JekyllPosts(jekyllRoot)
