@@ -72,8 +72,8 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
 
             val coverImage = pageInfo.page.cover
 
-            fun downloadImage(field: KMutableProperty0<String>) {
-                val url = URL(field.get())
+            fun downloadImage(url: String): String {
+                val url = URL(url)
                 val urlPath = File(url.path)
                 val baseName = File(url.path.replace("/", "-"))
                     .nameWithoutExtension
@@ -86,24 +86,15 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
                     println("downloadImage=$url")
                     localFile.writeBytes(url.readBytes())
                 }
-                field.set("/images/$fileName")
-
+                return "/images/$fileName"
             }
 
             if (coverImage != null) {
-                when (coverImage) {
-                    is NotionExternal -> downloadImage(coverImage.external::url)
-                    is NotionFile -> {
-                        downloadImage(coverImage.file::url)
-                        coverImage.file.expiry_time = null
-                    }
-                }
+                coverImage.url = downloadImage(coverImage.url)
             }
 
             for (block in pageInfo.blocks.filterIsInstance<ImageBlock>()) {
-                val ifile = block.image.file ?: continue
-                downloadImage(ifile::url)
-                ifile.expiry_time = null
+                block.image.url = downloadImage(block.image.url)
             }
 
             val pageInfoString = api.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(pageInfo)
@@ -166,7 +157,7 @@ data class PageInfo(
 
     @get:JsonIgnore
     val allImages: List<String> by lazy {
-        blocks.filterIsInstance<ImageBlock>().mapNotNull { it.image?.file?.url }
+        blocks.filterIsInstance<ImageBlock>().mapNotNull { it.image?.url }
     }
 
     @get:JsonIgnore

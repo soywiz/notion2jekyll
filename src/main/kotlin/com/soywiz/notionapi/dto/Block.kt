@@ -30,6 +30,7 @@ import java.util.*
     JsonSubTypes.Type(value = TableOfContentsBlock::class, name = "table_of_contents"),
     JsonSubTypes.Type(value = CodeBlock::class, name = "code"),
     JsonSubTypes.Type(value = TableBlock::class, name = "table"),
+    JsonSubTypes.Type(value = FileBlock::class, name = "file"),
 )
 open class Block(
 ) : NObject() {
@@ -182,19 +183,14 @@ data class VideoBlock(var video: Video) : Block() {
     }
 }
 
-data class ImageBlock(var image: Image) : Block() {
-    data class Image(
-        var caption: List<RichTextEntry>,
-        var type: String,
-        var file: ImageFile?
-    )
+data class ImageBlock(var image: NotionBaseFile) : Block() {
+    override fun toMarkdown(context: BlockContext): String {
+        return "![${image.caption.toMarkdown()}](${image.url})"
+    }
+}
 
-    data class ImageFile(
-        var url: String,
-        var expiry_time: String?
-    )
-
-    override fun toMarkdown(context: BlockContext): String = "![${image.caption.toMarkdown()}](${image.file?.url})"
+data class FileBlock(var file: NotionBaseFile) : Block() {
+    override fun toMarkdown(context: BlockContext): String = "![${file.caption.toMarkdown()}](${file.url})"
 }
 
 data class CodeBlock(

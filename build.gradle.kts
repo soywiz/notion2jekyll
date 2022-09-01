@@ -51,6 +51,7 @@ tasks {
 
     // https://superuser.com/questions/370388/simple-built-in-way-to-encrypt-and-decrypt-a-file-on-a-mac-via-command-line
     val jarEncrypted by creating(Exec::class.java) {
+        group = "package"
         dependsOn(jar)
         dependsOn(fatJarDeps)
         // https://superuser.com/questions/370388/simple-built-in-way-to-encrypt-and-decrypt-a-file-on-a-mac-via-command-line
@@ -67,8 +68,9 @@ tasks {
     }
 
     val jarAndCopy by creating(Copy::class.java) {
+        group = "package"
         dependsOn(jar)
-        from(jar.archiveFile)
+        from(jar.archiveFile)<
         into(File(projectDir, "../soywiz.com"))
     }
 }
