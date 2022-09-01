@@ -4,15 +4,16 @@ import java.io.*
 
 suspend fun main() {
     val jekyllRoot = File("../soywiz.com")
-    val cacheRoot = File(jekyllRoot, ".notion_cache")
+    val notionSecret = "secret_nss1EfFxsW2x5raz9TZ48VACglEK86YfqN8QqgxrbB0"
+    val databaseId = "38ceb3348ad54f64a743b3e2a3c5fd2c"
 
-    NotionCachedAPI(NotionAPI("secret_nss1EfFxsW2x5raz9TZ48VACglEK86YfqN8QqgxrbB0"), cacheRoot).use { notion ->
+    NotionCachedAPI(NotionAPI(notionSecret), File(jekyllRoot, ".notion_cache")).use { notion ->
         val posts = JekyllPosts(jekyllRoot)
         val existingPages = posts.readAll().associateBy { it.notionPageId }
         val newPageInfos = arrayListOf<PageInfo>()
         val newPages = LinkedHashMap<String, JekyllNotionPage>()
 
-        for (page in notion.getDatabase("38ceb3348ad54f64a743b3e2a3c5fd2c").pages) {
+        for (page in notion.getDatabase(databaseId).pages) {
             val npage: PageInfo = notion.getFullPage(page)
             val page = JekyllNotionPage(npage.toFileWithFrontMatter())
             newPageInfos += npage

@@ -18,7 +18,7 @@ import kotlin.reflect.jvm.*
     JsonSubTypes.Type(value = Database::class, name = "database"),
     JsonSubTypes.Type(value = Block::class, name = "block"),
     JsonSubTypes.Type(value = PartialUser::class, name = "user"),
-    JsonSubTypes.Type(value = ExternalImage::class, name = "external"),
+    JsonSubTypes.Type(value = NotionFileExternal::class, name = "external"),
 )
 open class NObject {
     open var `object`: String = ""

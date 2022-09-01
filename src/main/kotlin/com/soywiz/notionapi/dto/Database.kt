@@ -2,10 +2,13 @@ package com.soywiz.notionapi.dto
 
 import java.util.*
 
+/**
+ * https://developers.notion.com/reference/database
+ */
 data class Database(
     var id: String,
-    var cover: Image,
-    var icon: Image?,
+    var cover: NotionFile,
+    var icon: NotionFile?,
     var created_time: Date,
     var created_by: PartialUser,
     var last_edited_time: Date?,
