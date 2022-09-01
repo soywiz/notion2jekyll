@@ -65,4 +65,10 @@ tasks {
             )
         }
     }
+
+    val jarAndCopy by creating(Copy::class.java) {
+        dependsOn(jar)
+        from(jar.archiveFile)
+        into(File(projectDir, "../soywiz.com"))
+    }
 }

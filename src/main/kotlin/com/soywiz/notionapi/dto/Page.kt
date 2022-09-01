@@ -8,7 +8,7 @@ data class Page(
     var last_edited_time: Date,
     var created_by: PartialUser,
     var last_edited_by: PartialUser,
-    var cover: NotionFile?,
+    var cover: NotionBaseFile?,
     var archived: Boolean,
     var url: String,
     var properties: Map<String, PropertyItem>,

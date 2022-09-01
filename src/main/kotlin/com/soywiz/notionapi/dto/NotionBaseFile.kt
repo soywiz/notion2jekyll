@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.*
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes(
-    JsonSubTypes.Type(value = NotionFileExternal::class, name = "external"),
     JsonSubTypes.Type(value = NotionEmoji::class, name = "emoji"),
     JsonSubTypes.Type(value = NotionFile::class, name = "file"),
+    JsonSubTypes.Type(value = NotionExternal::class, name = "external"),
 )
-open class NotionFile {
+open class NotionBaseFile {
     var type: String = ""
 
     @JsonAnySetter
@@ -17,13 +17,19 @@ open class NotionFile {
     override fun toString(): String = "NotionFile(type=$type, $extra)"
 }
 
-data class NotionFileExternal(
+data class NotionExternal(
     var external: External,
-) : NotionFile() {
+) : NotionBaseFile() {
     data class External(var url: String)
+}
+
+data class NotionFile(
+    var file: NFile,
+) : NotionBaseFile() {
+    data class NFile(var url: String, var expiry_time: String?)
 }
 
 data class NotionEmoji(
     var emoji: String,
-) : NotionFile() {
+) : NotionBaseFile() {
 }

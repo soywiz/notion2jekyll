@@ -7,8 +7,8 @@ import java.util.*
  */
 data class Database(
     var id: String,
-    var cover: NotionFile,
-    var icon: NotionFile?,
+    var cover: NotionBaseFile,
+    var icon: NotionBaseFile?,
     var created_time: Date,
     var created_by: PartialUser,
     var last_edited_time: Date?,

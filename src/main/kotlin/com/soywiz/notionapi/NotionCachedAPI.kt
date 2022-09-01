@@ -70,7 +70,7 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
             val blocks = page.let { api.blocksChildren(pageId).toList() }
             val pageInfo = PageInfo(page, blocks)
 
-            val coverImage = (pageInfo.page.cover as? NotionFileExternal?)
+            val coverImage = pageInfo.page.cover
 
             fun downloadImage(field: KMutableProperty0<String>) {
                 val url = URL(field.get())
@@ -91,7 +91,13 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
             }
 
             if (coverImage != null) {
-                downloadImage(coverImage.external::url)
+                when (coverImage) {
+                    is NotionExternal -> downloadImage(coverImage.external::url)
+                    is NotionFile -> {
+                        downloadImage(coverImage.file::url)
+                        coverImage.file.expiry_time = null
+                    }
+                }
             }
 
             for (block in pageInfo.blocks.filterIsInstance<ImageBlock>()) {
@@ -155,7 +161,7 @@ data class PageInfo(
 
     @get:JsonIgnore
     val cover: String? by lazy {
-        (page.cover as? NotionFileExternal?)?.external?.url
+        (page.cover as? NotionExternal?)?.external?.url
     }
 
     @get:JsonIgnore
