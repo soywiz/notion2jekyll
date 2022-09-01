@@ -140,7 +140,7 @@ data class PageInfo(
     @get:JsonIgnore
     val title: String get() = findPropOfType<TitlePropertyItem>().firstOrNull()?.value?.toPlaintext() ?: ""
     @get:JsonIgnore
-    val permalink: String get() = findPropOfType<RichTextPropertyItem>().firstOrNull { it.key.equals("permalink", ignoreCase = true) }?.value?.toPlaintext() ?: permalink(title)
+    val permalink: String get() = findPropOfType<RichTextPropertyItem>().firstOrNull { it.key.equals("permalink", ignoreCase = true) }?.value?.toPlaintext()?.takeIf { it.isNotBlank() } ?: permalink(title)
     @get:JsonIgnore
     val sponsor: String get() = propsLC["sponsor"]?.toPlaintext() ?: ""
     @get:JsonIgnore
