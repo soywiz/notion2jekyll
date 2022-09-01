@@ -97,6 +97,7 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
             for (block in pageInfo.blocks.filterIsInstance<ImageBlock>()) {
                 val ifile = block.image.file ?: continue
                 downloadImage(ifile::url)
+                ifile.expiry_time = null
             }
 
             val pageInfoString = api.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(pageInfo)

@@ -58,7 +58,7 @@ tasks {
             val inputFile = jar.archiveFile.get()
             val pass = "MDd_oWiEGNfmpTy_q7NR7m"
             commandLine(
-                "openssl", "enc", "-aes-256-cbc", "-salt",
+                "openssl", "des3",
                 "-pass", "pass:$pass",
                 "-in", inputFile,
                 "-out", inputFile.asFile.absolutePath.replace(".jar", ".bin")

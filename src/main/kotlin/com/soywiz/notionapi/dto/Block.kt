@@ -189,7 +189,10 @@ data class ImageBlock(var image: Image) : Block() {
         var file: ImageFile?
     )
 
-    data class ImageFile(var url: String, var expiry_time: String)
+    data class ImageFile(
+        var url: String,
+        var expiry_time: String?
+    )
 
     override fun toMarkdown(context: BlockContext): String = "![${image.caption.toMarkdown()}](${image.file?.url})"
 }
