@@ -13,11 +13,13 @@ import kotlin.reflect.*
 // SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse("Tue Aug 30 10:25:00 CEST 2022")
 class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cache")) : Closeable {
     val imagesFolder = File(folder, "images")
+    val filesFolder = File(folder, "files")
     val databasesFolder = File(folder, "databases")
     val pagesFolder = File(folder, "pages")
     init {
         folder.mkdirs()
         imagesFolder.mkdirs()
+        filesFolder.mkdirs()
         databasesFolder.mkdirs()
         pagesFolder.mkdirs()
     }
@@ -72,21 +74,29 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
 
             val coverImage = pageInfo.page.cover
 
-            fun downloadImage(url: String): String {
+            fun downloadContent(url: String, folder: String, defaultExt: String): String {
                 val url = URL(url)
                 val urlPath = File(url.path)
                 val baseName = File(url.path.replace("/", "-"))
                     .nameWithoutExtension
                     .replace("secure.notion-static.com-", "")
                     .trim('-')
-                val ext = urlPath.extension.takeIf { it.isNotBlank() } ?: "jpg"
+                val ext = urlPath.extension.takeIf { it.isNotBlank() } ?: defaultExt
                 val fileName = "$baseName.$ext"
-                val localFile = File(imagesFolder, fileName)
+                val localFile = File(if (folder == "files") filesFolder else imagesFolder, fileName)
                 if (!localFile.exists()) {
-                    println("downloadImage=$url")
+                    println("download=$url")
                     localFile.writeBytes(url.readBytes())
                 }
-                return "/images/$fileName"
+                return "/$folder/$fileName"
+            }
+
+            fun downloadImage(url: String): String {
+                return downloadContent(url, "images", "jpg")
+            }
+
+            fun downloadFile(url: String): String {
+                return downloadContent(url, "files", "bin")
             }
 
             if (coverImage != null) {
@@ -95,6 +105,9 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
 
             for (block in pageInfo.blocks.filterIsInstance<ImageBlock>()) {
                 block.image.url = downloadImage(block.image.url)
+            }
+            for (block in pageInfo.blocks.filterIsInstance<FileBlock>()) {
+                block.file.url = downloadFile(block.file.url)
             }
 
             val pageInfoString = api.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(pageInfo)
@@ -158,6 +171,11 @@ data class PageInfo(
     @get:JsonIgnore
     val allImages: List<String> by lazy {
         blocks.filterIsInstance<ImageBlock>().mapNotNull { it.image?.url }
+    }
+
+    @get:JsonIgnore
+    val allFiles: List<String> by lazy {
+        blocks.filterIsInstance<FileBlock>().mapNotNull { it.file?.url }
     }
 
     @get:JsonIgnore

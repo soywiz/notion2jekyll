@@ -68,6 +68,19 @@ suspend fun main(args: Array<String>) {
                 }
             }
         }
-    }
 
+        // Ensure files are copied
+        println("Copying files [${newPageInfos.size}]...")
+        for (page in newPageInfos) {
+            for (image in page.allFiles) {
+                val baseFileName = File(image).name
+                val fromFile = File(notion.filesFolder, baseFileName)
+                val intoFile = File(posts.filesFolder, baseFileName)
+                if (!intoFile.exists()) {
+                    println("fromFile=$fromFile, intoFile=$intoFile")
+                    fromFile.copyTo(intoFile, overwrite = true)
+                }
+            }
+        }
+    }
 }

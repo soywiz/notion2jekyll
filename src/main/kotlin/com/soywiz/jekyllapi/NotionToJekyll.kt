@@ -37,10 +37,14 @@ fun PageInfo.toFileWithFrontMatter(): FileWithFrontMatter {
     val contentMarkdown = when (page.sponsor.toIntOrNull()) {
         null -> page.contentMarkdown
         else -> {
+            //val SPONSOR_START = "\n\$SPONSOR\$:\n"
+            //val SPONSOR_END = "\n:\$\$\n"
+            val SPONSOR_START = "{% if sponsored() %}"
+            val SPONSOR_END = "{% end %}"
             if (page.contentMarkdown.contains("\n---\n")) {
-                page.contentMarkdown.replaceFirst("\n---\n", "\n\$SPONSOR\$:\n") + "\n:\$\$\n"
+                page.contentMarkdown.replaceFirst("\n---\n", SPONSOR_START) + SPONSOR_END
             } else {
-                "\n\$SPONSOR\$:\n" + page.contentMarkdown + "\n:\$\$\n"
+                SPONSOR_START + page.contentMarkdown + SPONSOR_END
             }
         }
     }

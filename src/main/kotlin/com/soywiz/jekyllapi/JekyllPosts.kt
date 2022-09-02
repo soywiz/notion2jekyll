@@ -7,10 +7,12 @@ class JekyllPosts(jekyllRoot: File = File(".")) {
     val postsFolder: File = File(jekyllRoot, "posts").canonicalFile
     val draftsFolder: File = File(jekyllRoot, "drafts").canonicalFile
     val imagesFolder: File = File(jekyllRoot, "static/images").canonicalFile
+    val filesFolder: File = File(jekyllRoot, "static/files").canonicalFile
     init {
         postsFolder.mkdirs()
         draftsFolder.mkdirs()
         imagesFolder.mkdirs()
+        filesFolder.mkdirs()
     }
     fun readAll(): List<JekyllNotionPage> = buildList {
         for (folder in listOf(draftsFolder, postsFolder)) {
