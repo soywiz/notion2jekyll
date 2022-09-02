@@ -14,6 +14,8 @@ import kotlin.reflect.*
 class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cache")) : Closeable {
     val imagesFolder = File(folder, "images")
     val filesFolder = File(folder, "files")
+    //val imagesFolder = File(folder, "../static/images")
+    //val filesFolder = File(folder, "../static/files")
     val databasesFolder = File(folder, "databases")
     val pagesFolder = File(folder, "pages")
     init {
