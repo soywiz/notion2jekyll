@@ -167,17 +167,17 @@ data class PageInfo(
 
     @get:JsonIgnore
     val cover: String? by lazy {
-        (page.cover as? NotionExternal?)?.external?.url
+        page.cover?.url
     }
 
     @get:JsonIgnore
     val allImages: List<String> by lazy {
-        blocks.filterIsInstance<ImageBlock>().mapNotNull { it.image?.url }
+        blocks.filterIsInstance<ImageBlock>().map { it.image.url }
     }
 
     @get:JsonIgnore
     val allFiles: List<String> by lazy {
-        blocks.filterIsInstance<FileBlock>().mapNotNull { it.file?.url }
+        blocks.filterIsInstance<FileBlock>().map { it.file.url }
     }
 
     @get:JsonIgnore

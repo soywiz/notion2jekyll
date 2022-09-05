@@ -190,7 +190,7 @@ data class ImageBlock(var image: NotionBaseFile) : Block() {
 }
 
 data class FileBlock(var file: NotionBaseFile) : Block() {
-    override fun toMarkdown(context: BlockContext): String = "![${file.caption.toMarkdown()}](${file.url})"
+    override fun toMarkdown(context: BlockContext): String = "{% include 'file_link' url=\"${file.url.replace('"', '\'')}\" caption=\"${file.caption.toMarkdown().replace('"', '\'')}\" %}"
 }
 
 data class CodeBlock(
