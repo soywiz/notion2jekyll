@@ -10,11 +10,12 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import ru.gildor.coroutines.okhttp.*
 import java.io.Closeable
 
+@PublishedApi internal val MediaTypeApplicationJson = "application/json".toMediaType()
+
 class NotionAPI(private val bearer: String) : Closeable {
     val mapper: ObjectMapper get() = objectMapper
 
     companion object {
-        @PublishedApi internal val MediaTypeApplicationJson = "application/json".toMediaType()
         @PublishedApi internal val objectMapper = jacksonObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)

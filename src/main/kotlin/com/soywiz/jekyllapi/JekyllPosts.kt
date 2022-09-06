@@ -2,6 +2,7 @@ package com.soywiz.jekyllapi
 
 import com.soywiz.util.*
 import java.io.File
+import java.util.*
 
 class JekyllPosts(jekyllRoot: File = File(".")) {
     val postsFolder: File = File(jekyllRoot, "posts").canonicalFile
@@ -20,7 +21,7 @@ class JekyllPosts(jekyllRoot: File = File(".")) {
                 when (file.extension.lowercase()) {
                     "md", "markdown" -> {
                         val fileRelative = file.relativeTo(postsFolder)
-                        val page = JekyllNotionPage(file.readText(), fileRelative)
+                        val page = JekyllNotionPage(file.readText(), fileRelative, file.canonicalFile)
                         //println("file: ${matter.headerRaw}")
                         if (page.notionPageId != null) {
                             add(page)
@@ -45,21 +46,28 @@ class JekyllPosts(jekyllRoot: File = File(".")) {
 }
 
 class JekyllNotionPage(val file: FileWithFrontMatter) {
-    constructor(file: File) : this(FileWithFrontMatter(file.readText(), file))
-    constructor(rawFileContent: String, file: File) : this(FileWithFrontMatter(rawFileContent, file))
+    constructor(file: File, realFile: File) : this(FileWithFrontMatter(file.readText(), file, realFile))
+    constructor(rawFileContent: String, file: File, realFile: File) : this(FileWithFrontMatter(rawFileContent, file, realFile))
     val headers = file.headers
     val title = headers["title"]?.toString()
     val permalink = headers["permalink"]?.toString()
     val feature_image = headers["feature_image"]?.toString()
     val notionPageId = headers["notion_page_id"]?.toString()
+    val date: Date? = kotlin.runCatching {
+        val date = headers["date"]
+        (date as? Date?) ?: date?.toString()?.let { DateParse(it) }
+    }.getOrNull()
     val markdownBody: String get() = file.bodyRaw
+
+    fun save() = file.save()
+    fun url(sitePrefix: String): String = sitePrefix.trimEnd('/') + "/" + permalink?.trim('/')
 
     override fun toString(): String = "JekyllNotionPage('$title')"
 }
 
-data class FileWithFrontMatter(val headers: MutableMap<String, Any?>, val bodyRaw: String, val file: File) {
+data class FileWithFrontMatter(val headers: MutableMap<String, Any?>, val bodyRaw: String, val file: File, val realFile: File) {
     companion object {
-        operator fun invoke(rawFileContent: String, file: File): FileWithFrontMatter {
+        operator fun invoke(rawFileContent: String, file: File, realFile: File): FileWithFrontMatter {
             val parts = run {
                 val parts = "$rawFileContent\n".split("---\n", limit = 3)
                 when {
@@ -70,7 +78,7 @@ data class FileWithFrontMatter(val headers: MutableMap<String, Any?>, val bodyRa
             val headerRaw = parts[0] ?: ""
             val bodyRaw =  parts[1] ?: ""
             val headers: MutableMap<String, Any?> =  kotlin.runCatching { YAML.load<Map<String, Any?>>(headerRaw) }.getOrElse { emptyMap() }.toMutableMap()
-            return FileWithFrontMatter(headers, bodyRaw, file)
+            return FileWithFrontMatter(headers, bodyRaw, file, realFile)
         }
 
         fun buildMarkdownFile(headers: Map<String, Any?>, bodyRaw: String): String = buildString {
@@ -82,6 +90,9 @@ data class FileWithFrontMatter(val headers: MutableMap<String, Any?>, val bodyRa
         }
     }
 
+    fun save() {
+        realFile.writeText(toMarkdownString())
+    }
 
     fun toMarkdownString(): String = buildMarkdownFile(headers, bodyRaw)
     override fun toString(): String = toMarkdownString()

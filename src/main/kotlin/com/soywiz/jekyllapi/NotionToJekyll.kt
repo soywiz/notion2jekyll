@@ -4,7 +4,7 @@ import com.soywiz.notionapi.*
 import com.soywiz.util.*
 import java.io.*
 
-fun PageInfo.toFileWithFrontMatter(): FileWithFrontMatter {
+fun PageInfo.toFileWithFrontMatter(postsFolder: File): FileWithFrontMatter {
     val page = this
     val published = page.published
     val draft = page.draft
@@ -48,5 +48,5 @@ fun PageInfo.toFileWithFrontMatter(): FileWithFrontMatter {
             }
         }
     }
-    return FileWithFrontMatter(headers, contentMarkdown, file)
+    return FileWithFrontMatter(headers, contentMarkdown, file, postsFolder)
 }
