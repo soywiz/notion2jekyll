@@ -95,6 +95,8 @@ suspend fun main(args: Array<String>) {
                     if (oldPage.file.file != newPage.file.file) {
                         posts.delete(oldPage)
                     }
+                    val headers = oldPage.headers + newPage.headers
+                    newPage.headers.putAll(headers)
                     posts.write(newPage)
                 }
 
@@ -127,7 +129,6 @@ suspend fun main(args: Array<String>) {
                 }
             }
         }
-
         ScriptMode.DISCORD -> {
             val client = OkHttpClient()
             try {
@@ -148,33 +149,33 @@ suspend fun main(args: Array<String>) {
                 for (page in existingPages.values.sortedBy { it.date }) {
                     val sponsor_tier = page.headers["sponsor_tier"]?.toString()?.toIntOrNull()
                     if (page.headers["discord_sent"] == true) continue
-                    if (sponsor_tier != null) {
-                        val (channelPrice, channelUrl) = getChannelForTier(sponsor_tier)
-                        println("PAGE[${page.date}]: ${page.notionPageId} : $sponsor_tier : $channelPrice,$channelUrl")
-                        //println(page.headers["date"])
-                        val pageUrl = page.url(SITE_PREFIX)
-                        val dateFormat = SimpleDateFormat("YYYY-MM-dd")
-                        val messageContent = "`${dateFormat.format(page.date)}` : ${page.title} : $pageUrl"
+                    if (sponsor_tier == null) continue
 
-                        if (testMode) {
-                            println("  - [TEST] Message: $messageContent")
-                        } else {
-                            val request = Request.Builder()
-                                .url(channelUrl)
-                                .post(
-                                    jacksonObjectMapper().writeValueAsString(
-                                        mapOf(
-                                            "content" to messageContent,
-                                            "embeds" to emptyList<String>()
-                                        )
-                                    ).toRequestBody(MediaTypeApplicationJson)
-                                )
-                                .build()
-                            client.newCall(request).await()
+                    val (channelPrice, channelUrl) = getChannelForTier(sponsor_tier)
+                    println("PAGE[${page.date}]: ${page.notionPageId} : $sponsor_tier : $channelPrice,$channelUrl")
+                    //println(page.headers["date"])
+                    val pageUrl = page.url(SITE_PREFIX)
+                    val dateFormat = SimpleDateFormat("YYYY-MM-dd")
+                    val messageContent = "`${dateFormat.format(page.date)}` : ${page.title} : $pageUrl"
 
-                            page.headers["discord_sent"] = true
-                            page.save()
-                        }
+                    if (testMode) {
+                        println("  - [TEST] Message: $messageContent")
+                    } else {
+                        val request = Request.Builder()
+                            .url(channelUrl)
+                            .post(
+                                jacksonObjectMapper().writeValueAsString(
+                                    mapOf(
+                                        "content" to messageContent,
+                                        "embeds" to emptyList<String>()
+                                    )
+                                ).toRequestBody(MediaTypeApplicationJson)
+                            )
+                            .build()
+                        client.newCall(request).await()
+
+                        page.headers["discord_sent"] = true
+                        page.save()
                     }
                 }
             } finally {
