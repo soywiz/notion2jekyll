@@ -70,7 +70,7 @@ tasks {
     val jarAndCopy by creating(Copy::class.java) {
         group = "package"
         dependsOn(jar)
-        from(jar.archiveFile)<
+        from(jar.archiveFile)
         into(File(projectDir, "../soywiz.com"))
     }
 }
