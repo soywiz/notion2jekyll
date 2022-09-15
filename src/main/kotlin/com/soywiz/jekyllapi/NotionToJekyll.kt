@@ -20,8 +20,10 @@ fun PageInfo.toFileWithFrontMatter(postsFolder: File): FileWithFrontMatter {
         "tags" to (page.tags.takeIf { it.isNotBlank() }?.split(",")?.map { it.trim() } ?: emptyList()),
     )
 
+    val drafts = if (File(postsFolder, "drafts").exists()) "drafts" else "_drafts"
+
     val file = if (published == null || draft) {
-        File("../drafts/%s.md".format(page.permalink))
+        File("../%s/%s.md".format(drafts, page.permalink))
     } else {
         File(
             "%04d/%04d-%02d-%02d-%s.md".format(

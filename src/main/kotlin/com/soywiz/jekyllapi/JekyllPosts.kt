@@ -5,10 +5,10 @@ import java.io.File
 import java.util.*
 
 class JekyllPosts(jekyllRoot: File = File(".")) {
-    val postsFolder: File = File(jekyllRoot, "posts").canonicalFile
-    val draftsFolder: File = File(jekyllRoot, "drafts").canonicalFile
-    val imagesFolder: File = File(jekyllRoot, "static/images").canonicalFile
-    val filesFolder: File = File(jekyllRoot, "static/files").canonicalFile
+    val postsFolder: File = jekyllRoot["posts", "_posts"].canonicalFile
+    val draftsFolder: File = jekyllRoot["drafts", "_drafts"].canonicalFile
+    val imagesFolder: File = jekyllRoot["static/images"].canonicalFile
+    val filesFolder: File = jekyllRoot["static/files"].canonicalFile
     init {
         postsFolder.mkdirs()
         draftsFolder.mkdirs()

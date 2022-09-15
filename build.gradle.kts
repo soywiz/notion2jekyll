@@ -72,5 +72,6 @@ tasks {
         dependsOn(jar)
         from(jar.archiveFile)
         into(File(projectDir, "../soywiz.com"))
+        into(File(projectDir, "../blog.korge.org"))
     }
 }

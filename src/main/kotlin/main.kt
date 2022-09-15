@@ -50,7 +50,7 @@ suspend fun main(args: Array<String>) {
         ScriptMode.SYNC -> {
             val notionSecret = System.getenv("NOTION_SECRET") ?: error("NOTION_SECRET environment variable not set")
             val databaseId = System.getenv("NOTION_DATABASE_ID") ?: error("NOTION_DATABASE_ID environment variable not set")
-            if (!File(jekyllRoot, "posts").exists()) error("Folder '$jekyllRoot' doesn't contain a 'posts' folder. Potentially not a jekyll site")
+            if (!jekyllRoot["posts", "_posts"].exists()) error("Folder '$jekyllRoot' doesn't contain a 'posts' folder. Potentially not a jekyll site")
 
             NotionCachedAPI(NotionAPI(notionSecret), File(jekyllRoot, ".notion_cache")).use { notion ->
                 val posts = JekyllPosts(jekyllRoot)
