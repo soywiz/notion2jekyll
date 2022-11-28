@@ -192,6 +192,9 @@ data class PageInfo(
 
     @get:JsonIgnore
     val contentMarkdown: String get() = blocks.toMarkdown()
+
+    @get:JsonIgnore
+    val publishedOrDate: Date get() = published ?: page.created_time
 }
 
 fun permalink(input: String): String {

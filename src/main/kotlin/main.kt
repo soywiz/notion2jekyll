@@ -7,6 +7,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import ru.gildor.coroutines.okhttp.*
 import java.io.*
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.LinkedHashMap
 
 enum class ScriptMode {
     SYNC, DISCORD
@@ -22,6 +24,8 @@ suspend fun main(args: Array<String>) {
         if (arg.startsWith("-")) {
             when (arg.lowercase()) {
                 "-h", "--help" -> {
+                    println("notion2jekyll 0.2")
+                    println("")
                     println("-h, --help -- Displays help")
                     println("-s, --sync -- Syncs notion -> jekyll posts")
                     println("-d, --discord -- Send discord messages from sponsored posts")
@@ -58,8 +62,15 @@ suspend fun main(args: Array<String>) {
                 val newPageInfos = arrayListOf<PageInfo>()
                 val newPages = LinkedHashMap<String, JekyllNotionPage>()
 
-                for (page in notion.getDatabase(databaseId).pages) {
+                val notionPages = notion.getDatabase(databaseId).pages
+                val now = Date()
+
+                for (page in notionPages) {
                     val npage: PageInfo = notion.getFullPage(page)
+                    if (npage.publishedOrDate >= now) {
+                        println("FUTURE PAGE published: ${npage.publishedOrDate} >= now:$now: '${npage.title}'")
+                        continue
+                    }
                     val page = JekyllNotionPage(npage.toFileWithFrontMatter(posts.postsFolder))
                     newPageInfos += npage
                     newPages[npage.page.id] = page
