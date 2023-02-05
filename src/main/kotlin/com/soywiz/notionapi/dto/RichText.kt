@@ -104,6 +104,9 @@ data class RichTextEntry(
         }
     }
 
+    //val allowSplit: Boolean = href == null
+    val allowSplit: Boolean = href == null && !annotations.any
+
     companion object {
         val MAX_LINE_LENGTH = 120
         val IGNORE_LINE_BREAKS = false
@@ -112,9 +115,12 @@ data class RichTextEntry(
             val chunks = arrayListOf<ChunkWithFormat>()
             if (split) {
                 for (item in items) {
-                    chunks += item.fixedPlainText.let {
-                        if (ignoreLineBreaks) it.replace("\n", " ") else it
-                    }.splitBySpaces().map { ChunkWithFormat(it, item) }
+                    val text = item.fixedPlainText.let { if (ignoreLineBreaks) it.replace("\n", " ") else it }
+                    if (item.allowSplit) {
+                        chunks += text.splitBySpaces().map { ChunkWithFormat(it, item) }
+                    } else {
+                        chunks += ChunkWithFormat(text, item)
+                    }
                 }
             } else {
                 chunks += items.map { ChunkWithFormat(it.fixedPlainText, it) }

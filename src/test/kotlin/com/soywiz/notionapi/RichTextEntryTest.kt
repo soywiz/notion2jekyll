@@ -15,7 +15,7 @@ class RichTextEntryTest {
         assertEquals("hello\nworld", entry.toMarkdownAll(split = true, maxLineLength = 8))
         assertEquals("hello world", entry.toMarkdownAll(split = true, maxLineLength = 32))
 
-        assertEquals("**hello**\n**world**", entryBold.toMarkdownAll(split = true, maxLineLength = 8, ignoreLineBreaks = false))
+        assertEquals("**hello world**", entryBold.toMarkdownAll(split = true, maxLineLength = 8, ignoreLineBreaks = false))
         assertEquals("**hello world**", entryBold.toMarkdownAll(split = true, maxLineLength = 32))
     }
 
