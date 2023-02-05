@@ -50,6 +50,7 @@ class JekyllNotionPage(val file: FileWithFrontMatter) {
     constructor(rawFileContent: String, file: File, realFile: File) : this(FileWithFrontMatter(rawFileContent, file, realFile))
     val headers = file.headers
     val title = headers["title"]?.toString()
+    val author = headers["author"]?.toString()
     val permalink = headers["permalink"]?.toString()
     val feature_image = headers["feature_image"]?.toString()
     val notionPageId = headers["notion_page_id"]?.toString()

@@ -24,7 +24,7 @@ suspend fun main(args: Array<String>) {
         if (arg.startsWith("-")) {
             when (arg.lowercase()) {
                 "-h", "--help" -> {
-                    println("notion2jekyll 0.2")
+                    println("notion2jekyll 0.3")
                     println("")
                     println("-h, --help -- Displays help")
                     println("-s, --sync -- Syncs notion -> jekyll posts")
@@ -53,8 +53,10 @@ suspend fun main(args: Array<String>) {
     when (mode) {
         ScriptMode.SYNC -> {
             val notionSecret = System.getenv("NOTION_SECRET") ?: error("NOTION_SECRET environment variable not set")
-            val databaseId = System.getenv("NOTION_DATABASE_ID") ?: error("NOTION_DATABASE_ID environment variable not set")
+            val databaseIdsString = System.getenv("NOTION_DATABASE_ID") ?: error("NOTION_DATABASE_ID environment variable not set (multiple database IDs separated by comma)")
             if (!jekyllRoot["posts", "_posts"].exists()) error("Folder '$jekyllRoot' doesn't contain a 'posts' folder. Potentially not a jekyll site")
+
+            val databaseIds = databaseIdsString.split(",")
 
             NotionCachedAPI(NotionAPI(notionSecret), File(jekyllRoot, ".notion_cache")).use { notion ->
                 val posts = JekyllPosts(jekyllRoot)
@@ -62,18 +64,20 @@ suspend fun main(args: Array<String>) {
                 val newPageInfos = arrayListOf<PageInfo>()
                 val newPages = LinkedHashMap<String, JekyllNotionPage>()
 
-                val notionPages = notion.getDatabase(databaseId).pages
                 val now = Date()
 
-                for (page in notionPages) {
-                    val npage: PageInfo = notion.getFullPage(page)
-                    if (npage.publishedOrDate >= now) {
-                        println("FUTURE PAGE published: ${npage.publishedOrDate} >= now:$now: '${npage.title}'")
-                        continue
+                for (databaseId in databaseIds) {
+                    val notionPages = notion.getDatabase(databaseId).pages
+                    for (page in notionPages) {
+                        val npage: PageInfo = notion.getFullPage(page)
+                        if (npage.publishedOrDate >= now) {
+                            println("FUTURE PAGE published: ${npage.publishedOrDate} >= now:$now: '${npage.title}'")
+                            continue
+                        }
+                        val page = JekyllNotionPage(npage.toFileWithFrontMatter(posts.postsFolder))
+                        newPageInfos += npage
+                        newPages[npage.page.id] = page
                     }
-                    val page = JekyllNotionPage(npage.toFileWithFrontMatter(posts.postsFolder))
-                    newPageInfos += npage
-                    newPages[npage.page.id] = page
                 }
 
                 val removedIds = existingPages.keys - newPages.keys
