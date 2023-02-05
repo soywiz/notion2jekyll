@@ -14,6 +14,7 @@ fun PageInfo.toFileWithFrontMatter(postsFolder: File): FileWithFrontMatter {
         "notion_page_id" to page.page.id,
         "permalink" to "/" + page.permalink.trim('/') + "/",
         "sponsor_tier" to page.sponsor.toIntOrNull(),
+        "author" to page.author,
         "category" to page.category,
         "date" to published,
         "feature_image" to page.featured?.let { "/" + it.trim('/') },

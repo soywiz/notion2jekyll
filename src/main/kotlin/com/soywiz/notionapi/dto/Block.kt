@@ -89,7 +89,7 @@ open class BaseTextualBlock : Block() {
         var color: String,
         val checked: Boolean?,
     ) {
-        fun toMarkdown() = rich_text.toMarkdown()
+        fun toMarkdown() = rich_text.toMarkdown(split = true, allowLineBreaks = false)
     }
 }
 
@@ -97,7 +97,7 @@ data class ToggleBlock(var toggle: Paragraph) : BaseTextualBlock() {
     override fun toMarkdown(context: BlockContext): String {
         val str = StringBuilder()
         str.appendLine("<details markdown=1>")
-        str.appendLine("<summary markdown=1>${toggle.rich_text.toMarkdown()}</summary>")
+        str.appendLine("<summary markdown=1>${toggle.rich_text.toMarkdown(split = true)}</summary>")
         str.appendLine() // <-- content here after retrieving children
         str.appendLine("</details>")
         return str.toString()
@@ -112,13 +112,13 @@ data class TableBlock(var table: Table) : BaseTextualBlock() {
 }
 
 data class ParagraphBlock(var paragraph: Paragraph) : BaseTextualBlock() {
-    override fun toMarkdown(context: BlockContext): String = paragraph.rich_text.toMarkdown()
+    override fun toMarkdown(context: BlockContext): String = paragraph.rich_text.toMarkdown(split = true, allowLineBreaks = false)
 }
 
 data class ToDoBlock(var to_do: Paragraph) : BaseTextualBlock() {
     override fun toMarkdown(context: BlockContext): String {
         val checkbox = if (to_do.checked == true) "✅" else "🟩"
-        return "- $checkbox " + to_do.rich_text.toMarkdown()
+        return "- $checkbox " + to_do.rich_text.toMarkdown(split = false, allowLineBreaks = false)
     }
 
     @get:JsonIgnore
@@ -126,14 +126,14 @@ data class ToDoBlock(var to_do: Paragraph) : BaseTextualBlock() {
 }
 
 data class BulletedListItem(var bulleted_list_item: Paragraph) : BaseTextualBlock() {
-    override fun toMarkdown(context: BlockContext): String = "* " + bulleted_list_item.rich_text.toMarkdown()
+    override fun toMarkdown(context: BlockContext): String = "* " + bulleted_list_item.rich_text.toMarkdown(split = false, allowLineBreaks = false)
 
     @get:JsonIgnore
     override val group: Boolean get() = true
 }
 
 data class NumberedListItem(var numbered_list_item: Paragraph) : BaseTextualBlock() {
-    override fun toMarkdown(context: BlockContext): String = "${context.repeatedIndex + 1}. " + numbered_list_item.rich_text.toMarkdown()
+    override fun toMarkdown(context: BlockContext): String = "${context.repeatedIndex + 1}. " + numbered_list_item.rich_text.toMarkdown(split = false, allowLineBreaks = false)
 
     @get:JsonIgnore
     override val group: Boolean get() = true
@@ -141,11 +141,11 @@ data class NumberedListItem(var numbered_list_item: Paragraph) : BaseTextualBloc
 
 
 data class QuoteBlock(var quote: Paragraph) : BaseTextualBlock() {
-    override fun toMarkdown(context: BlockContext): String = "> " + quote.rich_text.toMarkdown()
+    override fun toMarkdown(context: BlockContext): String = "> " + quote.rich_text.toMarkdown(split = false, allowLineBreaks = false)
 }
 
 data class CalloutBlock(var callout: Paragraph) : BaseTextualBlock() {
-    override fun toMarkdown(context: BlockContext): String = "> " + callout.rich_text.toMarkdown()
+    override fun toMarkdown(context: BlockContext): String = "> " + callout.rich_text.toMarkdown(split = false, allowLineBreaks = false)
 }
 
 abstract class HeadingBlock(var count: Int) : Block() {
@@ -156,7 +156,7 @@ abstract class HeadingBlock(var count: Int) : Block() {
         var is_toggleable: Boolean,
         var color: String,
     ) {
-        fun toMarkdown() = RichTextEntry.toMarkdown(rich_text)
+        fun toMarkdown() = RichTextEntry.toMarkdownAll(rich_text, split = false)
     }
 
     override fun toMarkdown(context: BlockContext): String = "#".repeat(count) + " " + heading.toMarkdown()
@@ -185,12 +185,12 @@ data class VideoBlock(var video: Video) : Block() {
 
 data class ImageBlock(var image: NotionBaseFile) : Block() {
     override fun toMarkdown(context: BlockContext): String {
-        return "![${image.caption.toMarkdown()}](${image.url})"
+        return "![${image.caption.toMarkdown(split = false)}](${image.url})"
     }
 }
 
 data class FileBlock(var file: NotionBaseFile) : Block() {
-    override fun toMarkdown(context: BlockContext): String = "{% include 'file_link' url=\"${file.url.replace('"', '\'')}\" caption=\"${file.caption.toMarkdown().replace('"', '\'')}\" %}"
+    override fun toMarkdown(context: BlockContext): String = "{% include 'file_link' url=\"${file.url.replace('"', '\'')}\" caption=\"${file.caption.toMarkdown(split = false).replace('"', '\'')}\" %}"
 }
 
 data class CodeBlock(
@@ -204,7 +204,7 @@ data class CodeBlock(
 
     override fun toMarkdown(context: BlockContext): String = buildString {
         append("```${code.language}\n")
-        append(code.rich_text.toMarkdown().trim())
+        append(code.rich_text.toMarkdown(split = false).trim())
         append("\n```")
     }
 }

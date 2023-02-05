@@ -60,15 +60,15 @@ data class MultiSelectPropertyItem(
 data class RichTextPropertyItem(
     var rich_text: List<RichTextEntry>
 ) : PropertyItem() {
-    override fun toMarkdown(): String = rich_text.toMarkdown()
-    override fun toPlaintext(): String = rich_text.toPlaintext()
+    override fun toMarkdown(): String = rich_text.toMarkdown(split = false)
+    override fun toPlaintext(): String = rich_text.toPlaintext(split = false)
 }
 
 data class TitlePropertyItem(
     var title: List<RichTextEntry>
 ) : PropertyItem() {
-    override fun toMarkdown(): String = title.toMarkdown()
-    override fun toPlaintext(): String = title.toPlaintext()
+    override fun toMarkdown(): String = title.toMarkdown(split = false)
+    override fun toPlaintext(): String = title.toPlaintext(split = false)
 }
 
 data class LastEditedTimePropertyItem(

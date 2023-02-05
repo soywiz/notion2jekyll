@@ -150,6 +150,8 @@ data class PageInfo(
     @get:JsonIgnore
     val sponsor: String get() = propsLC["sponsor"]?.toPlaintext() ?: ""
     @get:JsonIgnore
+    val author: String get() = propsLC["author"]?.toPlaintext() ?: ""
+    @get:JsonIgnore
     val category: String get() = propsLC["category"]?.toPlaintext() ?: ""
     @get:JsonIgnore
     val created: Date get() = DateParse(findPropOfType<CreatedTimePropertyItem>().firstOrNull()?.value?.toPlaintext() ?: "")
