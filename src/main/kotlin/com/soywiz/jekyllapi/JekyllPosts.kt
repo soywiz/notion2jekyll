@@ -41,6 +41,7 @@ class JekyllPosts(jekyllRoot: File = File(".")) {
 
     fun write(page: JekyllNotionPage) {
         val file = File(postsFolder, page.file.file.path)
+        file.parentFile.mkdirs()
         file.writeText(page.file.toMarkdownString())
     }
 }
