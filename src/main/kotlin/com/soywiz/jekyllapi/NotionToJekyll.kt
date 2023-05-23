@@ -10,7 +10,7 @@ fun PageInfo.toFileWithFrontMatter(postsFolder: File): FileWithFrontMatter {
     val draft = page.draft
     val headers = mutableMapOf<String, Any?>(
         "layout" to "post",
-        "title" to page.title,
+        "title" to page.title.replace("\n", " "),
         "notion_page_id" to page.page.id,
         "permalink" to "/" + page.permalink.trim('/') + "/",
         "sponsor_tier" to page.sponsor.toIntOrNull(),
