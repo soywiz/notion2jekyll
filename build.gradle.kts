@@ -47,30 +47,4 @@ tasks {
         with(this@tasks["jar"] as CopySpec)
         from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     }
-
-    // https://superuser.com/questions/370388/simple-built-in-way-to-encrypt-and-decrypt-a-file-on-a-mac-via-command-line
-    val jarEncrypted by creating(Exec::class.java) {
-        group = "package"
-        dependsOn(jar)
-        dependsOn(fatJarDeps)
-        // https://superuser.com/questions/370388/simple-built-in-way-to-encrypt-and-decrypt-a-file-on-a-mac-via-command-line
-        doFirst {
-            val inputFile = jar.archiveFile.get()
-            val pass = "MDd_oWiEGNfmpTy_q7NR7m"
-            commandLine(
-                "openssl", "des3",
-                "-pass", "pass:$pass",
-                "-in", inputFile,
-                "-out", inputFile.asFile.absolutePath.replace(".jar", ".bin")
-            )
-        }
-    }
-
-    val jarAndCopy by creating(Copy::class.java) {
-        group = "package"
-        dependsOn(jar)
-        from(jar.archiveFile)
-        into(File(projectDir, "../soywiz.com"))
-        into(File(projectDir, "../blog.korge.org"))
-    }
 }
