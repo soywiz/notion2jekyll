@@ -1,0 +1,10 @@
+[libraries]
+okhttp = { module = "com.squareup.okhttp3:okhttp", version = "4.10.0" }
+coroutines-okhttp = { module = "ru.gildor.coroutines:kotlin-coroutines-okhttp", version = "1.0" }
+snakeyaml = { module = "org.yaml:snakeyaml", version = "2.2" }
+junit = { module = "junit:junit", version = "4.13.2" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version = "2.13.3" }
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.7.3" }
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version = "1.9.21" }

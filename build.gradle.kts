@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.7.21"
+    alias(libs.plugins.kotlin)
 }
 
 repositories {
@@ -9,14 +9,13 @@ repositories {
 
 dependencies {
     //implementation("com.soywiz.korlibs.korte:korte:3.0.0")
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    implementation("org.yaml:snakeyaml:1.30")
-    // ...
+    implementation(libs.okhttp)
+    implementation(libs.coroutines.okhttp)
+    implementation(libs.jackson.kotlin)
+    implementation(libs.kotlinx.coroutines)
+    implementation(libs.snakeyaml)
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit)
 }
 
 tasks {
