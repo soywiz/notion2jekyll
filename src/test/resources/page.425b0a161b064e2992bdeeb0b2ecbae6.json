@@ -1,0 +1,57 @@
+{
+    "object": "page",
+    "id": "425b0a16-1b06-4e29-92bd-eeb0b2ecbae6",
+    "created_time": "2023-12-03T22:41:00.000Z",
+    "last_edited_time": "2023-12-03T22:56:00.000Z",
+    "created_by": {
+        "object": "user",
+        "id": "15a47bdc-e5ba-49e2-97a6-c75feb5495a9"
+    },
+    "last_edited_by": {
+        "object": "user",
+        "id": "b043c5ba-f430-481a-b95e-e65403c1cbb9"
+    },
+    "cover": {
+        "type": "external",
+        "external": {
+            "url": "https://www.notion.so/images/page-cover/rijksmuseum_mignons_1660.jpg"
+        }
+    },
+    "icon": {
+        "type": "emoji",
+        "emoji": "🐊"
+    },
+    "parent": {
+        "type": "page_id",
+        "page_id": "0949f602-4baa-4c4c-a008-aa4aaaa4a017"
+    },
+    "archived": false,
+    "properties": {
+        "title": {
+            "id": "title",
+            "type": "title",
+            "title": [
+                {
+                    "type": "text",
+                    "text": {
+                        "content": "ALL STUFF TEST",
+                        "link": null
+                    },
+                    "annotations": {
+                        "bold": false,
+                        "italic": false,
+                        "strikethrough": false,
+                        "underline": false,
+                        "code": false,
+                        "color": "default"
+                    },
+                    "plain_text": "ALL STUFF TEST",
+                    "href": null
+                }
+            ]
+        }
+    },
+    "url": "https://www.notion.so/ALL-STUFF-TEST-425b0a161b064e2992bdeeb0b2ecbae6",
+    "public_url": null,
+    "request_id": "f8d2bfdb-1327-4650-bb15-a708f39fcce6"
+}

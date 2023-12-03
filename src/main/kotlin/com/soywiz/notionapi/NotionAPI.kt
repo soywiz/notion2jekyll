@@ -35,11 +35,6 @@ open class NotionAPI(private val bearer: String) : Closeable {
         request("pages/$pageId/properties/$propertyId?page_size=1000" + (if (cursor != null) "&start_cursor=$cursor" else ""))
     }
 
-    fun Response.bodyOrError(): ResponseBody {
-        if (this.code >= 400) error("HTTP error code=$code, body=${this.body?.string()}")
-        return body ?: error("HTTP without body")
-    }
-
     suspend fun databaseGet(id: String): Database {
         val body = request("databases/$id").bodyOrError()
         return objectMapper.readValue(body.string())
@@ -128,4 +123,9 @@ open class NotionAPI(private val bearer: String) : Closeable {
     override fun close() {
         client.dispatcher.executorService.shutdown()
     }
+}
+
+fun Response.bodyOrError(): ResponseBody {
+    if (this.code >= 400) error("HTTP error code=$code, body=${this.body?.string()}")
+    return body ?: error("HTTP without body")
 }
