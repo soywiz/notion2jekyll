@@ -3,6 +3,7 @@ package com.soywiz.notionapi.dto
 import com.vladsch.flexmark.ast.*
 import com.vladsch.flexmark.ext.anchorlink.AnchorLink
 import com.vladsch.flexmark.ext.gfm.strikethrough.Strikethrough
+import com.vladsch.flexmark.ext.tables.TableBlock
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.profile.pegdown.Extensions
 import com.vladsch.flexmark.profile.pegdown.PegdownOptionsAdapter
@@ -107,6 +108,18 @@ object MarkdownToBlocks {
                     val language = item.info.unescapeNoEntities()
                     val code = (item.firstChild as Text).chars.unescapeNoEntities()
                     out.add(CodeBlock(CodeBlock.Code(emptyList(), listOf(RichTextEntry(code)), language)))
+                }
+                is ThematicBreak -> {
+                    out.add(DividerBlock(DividerBlock.Divider()))
+                }
+                is TableBlock -> {
+                    val table = com.soywiz.notionapi.dto.TableBlock(com.soywiz.notionapi.dto.TableBlock.Table(1024, false, false))
+
+                    for (it in item.childIterator) {
+                        println("it=$it")
+                    }
+
+                    out.add(table)
                 }
                 else -> {
                     TODO("item=$item")

@@ -3,6 +3,8 @@ package com.soywiz.notionapi.dto
 import com.fasterxml.jackson.annotation.*
 import java.util.*
 
+// https://developers.notion.com/reference/block
+
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
@@ -30,6 +32,7 @@ import java.util.*
     JsonSubTypes.Type(value = TableOfContentsBlock::class, name = "table_of_contents"),
     JsonSubTypes.Type(value = CodeBlock::class, name = "code"),
     JsonSubTypes.Type(value = TableBlock::class, name = "table"),
+    JsonSubTypes.Type(value = TableRowBlock::class, name = "table_row"),
     JsonSubTypes.Type(value = FileBlock::class, name = "file"),
 )
 open class Block(
@@ -42,6 +45,11 @@ open class Block(
     var has_children: Boolean = false
     var archived: Boolean = false
     var type: String = ""
+    var children: List<Block> = emptyList()
+        set(value) {
+            field = value
+            has_children = value.isNotEmpty()
+        }
 
     @get:JsonIgnore
     open val group: Boolean get() = false
@@ -104,11 +112,17 @@ data class ToggleBlock(var toggle: Paragraph) : BaseTextualBlock() {
     }
 }
 
-data class TableBlock(var table: Table) : BaseTextualBlock() {
+data class TableBlock(var table: Table) : Block() {
     data class Table(val table_width: Int, val has_column_header: Boolean, val has_row_header: Boolean)
     override fun toMarkdown(context: BlockContext): String {
         return "<table><!-- TODO children --></table>"
     }
+}
+
+data class TableRowBlock(var table_row: TableRow) : Block() {
+    data class TableRow(
+        val cells: List<List<RichTextEntry>>,
+    )
 }
 
 data class ParagraphBlock(var paragraph: Paragraph) : BaseTextualBlock() {

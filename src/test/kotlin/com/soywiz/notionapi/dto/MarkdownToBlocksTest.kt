@@ -1,5 +1,6 @@
 package com.soywiz.notionapi.dto
 
+import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -44,6 +45,12 @@ class MarkdownToBlocksTest {
     }
 
     @Test
+    fun testSeparator() {
+        val code = "1\n\n---\n\n2"
+        assertEquals(code, markdownProcess(code))
+    }
+
+    @Test
     fun testLink2() {
         val code = "<http://link>"
         assertEquals(code, markdownProcess(code))
@@ -63,7 +70,27 @@ class MarkdownToBlocksTest {
 
     @Test
     fun testOrderedList() {
-        val code = "1. one\n2. two\n3. three"
+        "1. one\n2. two\n3. three".also { code -> assertEquals(code, markdownProcess(code)) }
+        //"2. two\n3. three\n4. four".also { code -> assertEquals(code, markdownProcess(code)) }
+    }
+
+    @Test
+    @Ignore
+    fun testTable() {
+        val code = """
+            |-----------------+------------+-----------------+----------------|
+            | Default aligned |Left aligned| Center aligned  | Right aligned  |
+            |-----------------|:-----------|:---------------:|---------------:|
+            | First body part |Second cell | Third cell      | fourth cell    |
+            | Second line     |foo         | **strong**      | baz            |
+            | Third line      |quux        | baz             | bar            |
+            |-----------------+------------+-----------------+----------------|
+            | Second body     |            |                 |                |
+            | 2 line          |            |                 |                |
+            |=================+============+=================+================|
+            | Footer row      |            |                 |                |
+            |-----------------+------------+-----------------+----------------|
+        """.trimIndent()
         assertEquals(code, markdownProcess(code))
     }
 
