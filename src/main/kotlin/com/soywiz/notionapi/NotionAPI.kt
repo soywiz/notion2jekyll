@@ -3,16 +3,18 @@ package com.soywiz.notionapi
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.module.kotlin.*
 import com.soywiz.notionapi.dto.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import ru.gildor.coroutines.okhttp.*
 import java.io.Closeable
+import kotlin.time.Duration.Companion.seconds
 
 @PublishedApi internal val MediaTypeApplicationJson = "application/json".toMediaType()
 
-class NotionAPI(private val bearer: String) : Closeable {
+open class NotionAPI(private val bearer: String) : Closeable {
     val mapper: ObjectMapper get() = objectMapper
 
     companion object {
@@ -87,12 +89,37 @@ class NotionAPI(private val bearer: String) : Closeable {
     }
 
     suspend fun request(path: String, body: RequestBody? = null): Response {
-        val request = Request.Builder()
-            .url("https://api.notion.com/v1/$path")
-            .header("Authorization", "Bearer $bearer")
-            .header("Notion-Version", notionVersion)
+        retry@while (true) {
+            val result = httpRequest(
+                "https://api.notion.com/v1/$path",
+                Headers.headersOf(
+                    "Authorization", "Bearer $bearer",
+                    "Notion-Version", notionVersion,
+                ),
+                body = body
+            )
+            // https://developers.notion.com/reference/request-limits#rate-limits
+            if (result.code == 429) {
+                val retryAfter = result.header("Retry-After")?.toIntOrNull()
+                if (retryAfter != null) {
+                    delay(retryAfter.toInt().seconds)
+                    continue@retry
+                }
+            }
+            return result
+        }
+    }
+
+    protected open suspend fun buildHttpRequest(url: String, headers: Headers, body: RequestBody? = null): Request {
+        return Request.Builder()
+            .url(url)
+            .headers(headers)
             .also { if (body != null) it.post(body) }
             .build()
+    }
+
+        protected open suspend fun httpRequest(url: String, headers: Headers, body: RequestBody? = null): Response {
+        val request = buildHttpRequest(url, headers, body)
         return client.newCall(request).await()
     }
 
