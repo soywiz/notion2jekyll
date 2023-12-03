@@ -153,8 +153,8 @@ abstract class HeadingBlock(var count: Int) : Block() {
 
     data class Heading(
         var rich_text: List<RichTextEntry>,
-        var is_toggleable: Boolean,
-        var color: String,
+        var is_toggleable: Boolean = false,
+        var color: String = "default",
     ) {
         fun toMarkdown() = RichTextEntry.toMarkdownAll(rich_text, split = false)
     }

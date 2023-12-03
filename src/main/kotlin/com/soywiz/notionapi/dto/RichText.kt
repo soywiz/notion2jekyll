@@ -3,15 +3,37 @@ package com.soywiz.notionapi.dto
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.soywiz.util.*
 
+interface IRichTextEntry
+
+data class RichTextEntryImage(
+    var plain_text: String,
+    val url: String,
+    val title: String? = null
+) : IRichTextEntry
+
 data class RichTextEntry(
     var plain_text: String,
     var href: String? = null,
-    var annotations: Annotations = Annotations(),
+    var annotations: Annotations = Annotations.DEFAULT,
     var type: String = "text", // text, mention, equation,
     var text: Text? = null,
     var equation: Equation? = null,
     var mention: Mention? = null,
-) {
+) : IRichTextEntry {
+    override fun toString(): String {
+        return buildString {
+            append("RichTextEntry")
+            append("[").append(buildList<String> {
+                if (href != null) append("href=$href")
+                if (annotations != Annotations.DEFAULT) append("annotations=$annotations")
+                if (type != "text") append("type=$type")
+                if (equation != null) append("equation=$equation")
+                if (mention != null) append("mention=$mention")
+            }.joinToString(", ")).append("]")
+            append("('").append(plain_text).append("')")
+        }
+    }
+
     @get:JsonIgnore
     val fixedPlainText = plain_text
         .replace('\u00A0', ' ') // non-breaking space
@@ -36,8 +58,21 @@ data class RichTextEntry(
         var code: Boolean = false,
         var color: String = "default",
     ) {
+        companion object {
+            val DEFAULT = Annotations()
+        }
+
         @get:JsonIgnore
         val any: Boolean = bold || italic || strikethrough || underline || code || color != "default"
+
+        override fun toString(): String = "Annotations[" + buildList {
+            if (bold) add("bold")
+            if (italic) add("italic")
+            if (strikethrough) add("strikethrough")
+            if (underline) add("underline")
+            if (code) add("code")
+            if (color != "default") add("color=$color")
+        }.joinToString(",") + "]"
     }
 
     data class Link(

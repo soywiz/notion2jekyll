@@ -14,6 +14,7 @@ dependencies {
     implementation(libs.jackson.kotlin)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.snakeyaml)
+    implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
