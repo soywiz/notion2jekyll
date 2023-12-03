@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     alias(libs.plugins.kotlin)
 }
@@ -48,5 +51,19 @@ tasks {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         with(this@tasks["jar"] as CopySpec)
         from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    }
+}
+
+tasks.withType<Test> {
+    testLogging {
+        events = mutableSetOf(
+            //TestLogEvent.STARTED, TestLogEvent.PASSED,
+            TestLogEvent.SKIPPED,
+            TestLogEvent.FAILED,
+            TestLogEvent.STANDARD_OUT, TestLogEvent.STANDARD_ERROR
+        )
+        exceptionFormat = TestExceptionFormat.FULL
+        showStackTraces = true
+        showStandardStreams = true
     }
 }
