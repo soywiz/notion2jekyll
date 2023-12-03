@@ -5,14 +5,23 @@ import com.vladsch.flexmark.ext.anchorlink.AnchorLink
 import com.vladsch.flexmark.ext.gfm.strikethrough.Strikethrough
 import com.vladsch.flexmark.ext.tables.TableBlock
 import com.vladsch.flexmark.parser.Parser
-import com.vladsch.flexmark.profile.pegdown.Extensions
-import com.vladsch.flexmark.profile.pegdown.PegdownOptionsAdapter
+import com.vladsch.flexmark.parser.ParserEmulationProfile
 import com.vladsch.flexmark.util.ast.Node
+import com.vladsch.flexmark.util.data.MutableDataSet
 
 object MarkdownToBlocks {
-    val parser = Parser.builder(PegdownOptionsAdapter.flexmarkOptions(
-        Extensions.ALL
-    )).build()
+    val parser = Parser.builder(MutableDataSet().also { options ->
+        options.setFrom(ParserEmulationProfile.KRAMDOWN)
+        options.set(
+            Parser.EXTENSIONS, listOf(
+                //AbbreviationExtension.create(),
+                //DefinitionExtension.create(),
+                //FootnoteExtension.create(),
+                //TablesExtension.create(),
+                //TypographicExtension.create()
+            )
+        )
+    }).build()
 
     fun markdownToBlocks(markdown: String): List<Block> {
         return parser.parse(markdown).toBlockBlocks()
