@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.snakeyaml)
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 tasks {
