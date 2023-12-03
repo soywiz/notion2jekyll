@@ -34,6 +34,11 @@ import java.util.*
     JsonSubTypes.Type(value = TableBlock::class, name = "table"),
     JsonSubTypes.Type(value = TableRowBlock::class, name = "table_row"),
     JsonSubTypes.Type(value = FileBlock::class, name = "file"),
+    JsonSubTypes.Type(value = ColumnListBlock::class, name = "column_list"),
+    JsonSubTypes.Type(value = BreadCrumbBlock::class, name = "breadcrumb"),
+    JsonSubTypes.Type(value = ChildPageBlock::class, name = "child_page"),
+    JsonSubTypes.Type(value = EquationBlock::class, name = "equation"),
+    JsonSubTypes.Type(value = SyncedBlock::class, name = "synced_block"),
 )
 open class Block(
 ) : NObject() {
@@ -182,17 +187,11 @@ data class DividerBlock(var divider: Divider) : Block() {
     override fun toMarkdown(context: BlockContext): String = "---"
 }
 
-data class VideoBlock(var video: Video) : Block() {
-    data class Video(
-        var caption: List<RichTextEntry>,
-        var type: String,
-        var external: External?
-    )
-
-    data class External(var url: String)
+data class VideoBlock(var video: NotionBaseFile) : Block() {
+    val external: String? get() = (video as? NotionExternal?)?.external?.url
 
     override fun toMarkdown(context: BlockContext): String {
-        val url = video.external?.url?.replace("watch?v=", "embed/")
+        val url = external?.replace("watch?v=", "embed/")
         return """<iframe width="560" height="315" src="$url" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>"""
     }
 }
@@ -245,4 +244,33 @@ data class Heading5Block(var heading_5: Heading) : HeadingBlock(5) {
 
 data class Heading6Block(var heading_6: Heading) : HeadingBlock(6) {
     override var heading by ::heading_6
+}
+
+data class ColumnListBlock(var column_list: ColumnList) : Block() {
+    class ColumnList
+
+    init {
+        has_children = true
+    }
+}
+
+data class BreadCrumbBlock(var breadcrumb: Breadcrumb) : Block() {
+    class Breadcrumb
+}
+
+data class ChildPageBlock(var child_page: ChildPage) : Block() {
+    data class ChildPage(var title: String)
+}
+
+data class EquationBlock(var equation: Equation) : Block() {
+    data class Equation(var expression: String)
+}
+
+data class SyncedBlock(var synced_block: Synced) : Block() {
+    data class Synced(
+        var synced_from: SyncedFrom? = null,
+        var children: List<Block>? = null,
+    )
+
+    data class SyncedFrom(var block_id: String)
 }

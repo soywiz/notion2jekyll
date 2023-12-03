@@ -34,8 +34,12 @@ data class NotionExternal(
 
 data class NotionFile(
     var file: NFile,
+    var name: String? = null,
 ) : NotionBaseFile() {
-    data class NFile(var url: String, var expiry_time: String?)
+    data class NFile(
+        var url: String,
+        var expiry_time: String?
+    )
 
     @get:JsonIgnore
     override var url: String
