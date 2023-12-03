@@ -3,7 +3,7 @@ package com.soywiz.notionapi.dto
 import java.util.*
 
 /**
- * https://developers.notion.com/reference/database
+ * <https://developers.notion.com/reference/database>
  */
 data class Database(
     var id: String,
