@@ -1,0 +1,21 @@
+#!/bin/bash
+
+export NOTION2JEKYLL_VERSION=v0.2
+export NOTION2JEKYLL_FOLDER=~/.notion2jekyll
+export NOTION2JEKYLL_JAR=$NOTION2JEKYLL_FOLDER/notion2jekyll-$NOTION2JEKYLL_VERSION.jar
+export NOTION2JEKYLL_URL=https://github.com/soywiz/notion2jekyll/releases/download/$NOTION2JEKYLL_VERSION/notion2jekyll.jar
+mkdir -p "$NOTION2JEKYLL_FOLDER"
+
+if ! test -f "$NOTION2JEKYLL_JAR"; then
+  if command -v wget > /dev/null 2>&1; then
+    #echo "WGET"
+    wget -q -O "$NOTION2JEKYLL_JAR" "$NOTION2JEKYLL_URL"
+  elif command -v curl > /dev/null 2>&1; then
+    #echo "CURL"
+    curl -s "$NOTION2JEKYLL_URL" -o "$NOTION2JEKYLL_JAR"
+  else
+    echo "Can't find WGET or CURL"
+  fi
+fi
+
+java -jar "$NOTION2JEKYLL_JAR" $*
