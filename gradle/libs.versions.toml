@@ -1,18 +1,29 @@
+[versions]
+kotlin = "1.9.21"
+jackson = "2.16.0"
+kotlinx-coroutines = "1.7.3"
+junit = "4.13.2"
+flexmark = "0.64.8"
+okhttp = "4.10.0"
+snakeyaml = "2.2"
+kotlin-coroutines-okhttp = "1.0"
+
 [libraries]
-okhttp = { module = "com.squareup.okhttp3:okhttp", version = "4.10.0" }
-coroutines-okhttp = { module = "ru.gildor.coroutines:kotlin-coroutines-okhttp", version = "1.0" }
-snakeyaml = { module = "org.yaml:snakeyaml", version = "2.2" }
-junit = { module = "junit:junit", version = "4.13.2" }
-jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version = "2.13.3" }
-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.7.3" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.7.3" }
-flexmark = { module = "com.vladsch.flexmark:flexmark", version = "0.64.8" }
-flexmark-ext-gfm-strikethrough = { module = "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough", version = "0.64.8" }
-flexmark-ext-anchorlink = { module = "com.vladsch.flexmark:flexmark-ext-anchorlink", version = "0.64.8" }
-flexmark-ext-tables = { module = "com.vladsch.flexmark:flexmark-ext-tables", version = "0.64.8" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+coroutines-okhttp = { module = "ru.gildor.coroutines:kotlin-coroutines-okhttp", version.ref = "kotlin-coroutines-okhttp" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+junit = { module = "junit:junit", version.ref = "junit" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+flexmark = { module = "com.vladsch.flexmark:flexmark", version.ref = "flexmark" }
+flexmark-ext-gfm-strikethrough = { module = "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough", version.ref = "flexmark" }
+flexmark-ext-anchorlink = { module = "com.vladsch.flexmark:flexmark-ext-anchorlink", version.ref = "flexmark" }
+flexmark-ext-tables = { module = "com.vladsch.flexmark:flexmark-ext-tables", version.ref = "flexmark" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
 [bundles]
 flexmark = ["flexmark", "flexmark-ext-gfm-strikethrough", "flexmark-ext-anchorlink", "flexmark-ext-tables"]
 
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version = "1.9.21" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
