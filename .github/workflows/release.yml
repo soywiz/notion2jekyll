@@ -9,7 +9,8 @@ jobs:
   build:
     name: Publish binaries
     runs-on: ubuntu-latest
-
+    env:
+      FORCED_VERSION: ${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
