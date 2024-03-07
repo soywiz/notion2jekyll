@@ -53,7 +53,7 @@ open class NotionAPI(private val bearer: String) : Closeable {
         request("blocks/$blockId/children?page_size=1000" + (if (cursor != null) "&start_cursor=$cursor" else ""))
     }
 
-    inline suspend fun <reified T> paginate(noinline request: suspend (cursor: String?) -> Response): Flow<T> = flow {
+    inline suspend fun <reified T : NObject> paginate(noinline request: suspend (cursor: String?) -> Response): Flow<T> = flow {
         var cursor: String? = null
         while (true) {
             val res = request(cursor).body ?: return@flow
@@ -61,21 +61,21 @@ open class NotionAPI(private val bearer: String) : Closeable {
             val obj = objectMapper.readValue<SimpleObject>(str)
             when (obj.`object`) {
                 "error" -> {
-                    throw NError(objectMapper.readValue<NErrorObject>(str))
+                    throw NError(objectMapper.readValue<NErrorObject>(str).clean())
                 }
 
                 "list" -> {
-                    val result = objectMapper.readValue<NListObject<T>>(str)
+                    val result = objectMapper.readValue<NListObject<T>>(str).clean()
                     res.close()
                     for (result in result.results) {
-                        emit(result)
+                        emit(result.clean())
                     }
                     cursor = result.next_cursor
                     if (result.has_more) continue
                 }
 
                 else -> {
-                    emit(objectMapper.readValue<T>(str))
+                    emit(objectMapper.readValue<T>(str).clean())
                 }
             }
 

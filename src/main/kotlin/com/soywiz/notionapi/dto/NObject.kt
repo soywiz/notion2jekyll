@@ -29,6 +29,11 @@ open class NObject {
     override fun toString(): String = "${this::class.jvmName}(${`object`}, $extra)"
 }
 
+fun <T : NObject> T.clean(): T {
+    extra.remove("request_id")
+    return this
+}
+
 data class NListObject<T>(
     override var `object`: String,
     var results: List<T>,
