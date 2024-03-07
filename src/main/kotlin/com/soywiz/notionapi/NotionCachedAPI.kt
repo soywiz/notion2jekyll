@@ -47,7 +47,7 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
             } else {
                 println("Database pages not cached")
                 val pages = api.databaseQuery(databaseId)
-                val databaseInfo = DatabaseInfo(database, pages.toList().filterIsInstance<Page>())
+                val databaseInfo = DatabaseInfo(database, pages.toList().filterIsInstance<Page>()).clean()
                 cachedFile.writeText(api.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(databaseInfo))
             }
 
@@ -112,7 +112,7 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
                 block.file.url = downloadFile(block.file.url)
             }
 
-            val pageInfoString = api.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(pageInfo)
+            val pageInfoString = api.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(pageInfo.clean())
             cachedFile.writeText(pageInfoString)
             val newPage = api.mapper.readValue(cachedFile.readText(), PageInfo::class.java)
             //println("$page,$newPage")
@@ -129,7 +129,13 @@ class NotionCachedAPI(val api: NotionAPI, val folder: File = File("./.notion_cac
 data class DatabaseInfo(
     val database: Database,
     val pages: List<Page>
-)
+) {
+    fun clean(): DatabaseInfo {
+        database.clean()
+        for (page in pages) page.clean()
+        return this
+    }
+}
 
 data class PageInfo(
     val page: Page,
@@ -197,6 +203,12 @@ data class PageInfo(
 
     @get:JsonIgnore
     val publishedOrDate: Date get() = published ?: page.created_time
+
+    fun clean(): PageInfo {
+        page.clean()
+        for (block in blocks) block.clean()
+        return this
+    }
 }
 
 fun permalink(input: String): String {
