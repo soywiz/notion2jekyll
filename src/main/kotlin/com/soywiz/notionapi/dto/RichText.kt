@@ -84,25 +84,36 @@ data class RichTextEntry(
 
     fun toPlaintext(): String = fixedPlainText
     fun toMarkdown(): String = buildString {
+        val fullText = fixedPlainText
+        val fullTextStartTrimmed = fullText.trimStart()
+        val nspacesStart = fullText.length - fullTextStartTrimmed.length
+        val fullTextEndTrimmed = fullTextStartTrimmed.trimEnd()
+        val innerText = fullTextEndTrimmed
+        val nspacesEnd = fullTextStartTrimmed.length - fullTextEndTrimmed.length
+        val spacesStart = " ".repeat(nspacesStart)
+        val spacesEnd = " ".repeat(nspacesEnd)
+
+        append(spacesStart)
         if (annotations.strikethrough) append("~~")
         if (annotations.bold) append("**")
         if (annotations.italic) append("_")
-        if (href != null && fixedPlainText != href) append("[")
+        if (href != null && innerText != href) append("[")
         if (annotations.underline) append("<ins>")
         if (annotations.color != "default") append("<span style='color:${annotations.color}' markdown=1>")
         if (annotations.code) append("`")
-        if (href == fixedPlainText) {
-            append("<${fixedPlainText}>")
+        if (href == innerText) {
+            append("<$innerText>")
         } else {
-            append(fixedPlainText)
+            append(innerText)
         }
         if (annotations.code) append("`")
         if (annotations.color != "default") append("</span>")
         if (annotations.underline) append("</ins>")
-        if (href != null && fixedPlainText != href) append("]($href)")
+        if (href != null && fullText != href) append("]($href)")
         if (annotations.italic) append("_")
         if (annotations.bold) append("**")
         if (annotations.strikethrough) append("~~")
+        append(spacesEnd)
     }
 
     fun toPlaintextAll(split: Boolean, maxLineLength: Int = MAX_LINE_LENGTH, ignoreLineBreaks: Boolean = IGNORE_LINE_BREAKS): String = Companion.toPlaintextAll(listOf(this), split, maxLineLength, ignoreLineBreaks)
