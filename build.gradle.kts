@@ -4,6 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     java
     alias(libs.plugins.kotlin)
+    `maven-publish`
 }
 
 repositories {
@@ -74,9 +75,20 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8" // Specify the JVM version here
+    }
+}
+
+group = "com.soywiz"
+version = "0.0.1-SNAPSHOT"
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            //artifact(tasks.getByName("jar"))
+            artifact(tasks.getByName("fatJar"))
+        }
     }
 }
