@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export NOTION2JEKYLL_VERSION=v0.2
+export NOTION2JEKYLL_VERSION=v0.3
+export NOTION2JEKYLL_SHA1=740e236f17e158eb0a357c4abe679adb4d41d1e9
 export NOTION2JEKYLL_FOLDER=~/.notion2jekyll
 export NOTION2JEKYLL_JAR=$NOTION2JEKYLL_FOLDER/notion2jekyll-$NOTION2JEKYLL_VERSION.jar
 export NOTION2JEKYLL_URL=https://github.com/soywiz/notion2jekyll/releases/download/$NOTION2JEKYLL_VERSION/notion2jekyll.jar
@@ -9,13 +10,22 @@ mkdir -p "$NOTION2JEKYLL_FOLDER"
 if ! test -f "$NOTION2JEKYLL_JAR"; then
   if command -v wget > /dev/null 2>&1; then
     #echo "WGET"
-    wget -q -O "$NOTION2JEKYLL_JAR" "$NOTION2JEKYLL_URL"
+    wget -q -O "$NOTION2JEKYLL_JAR.temp" "$NOTION2JEKYLL_URL"
   elif command -v curl > /dev/null 2>&1; then
     #echo "CURL"
-    curl -s "$NOTION2JEKYLL_URL" -o "$NOTION2JEKYLL_JAR"
+    curl -s "$NOTION2JEKYLL_URL" -o "$NOTION2JEKYLL_JAR.temp"
   else
     echo "Can't find WGET or CURL"
   fi
+
+    SHA1=$(shasum "${NOTION2JEKYLL_JAR}.temp" | cut -d' ' -f1)
+    if [ "$SHA1" == "$NOTION2JEKYLL_SHA1" ]; then
+      cp -f "${NOTION2JEKYLL_JAR}.temp" "$NOTION2JEKYLL_JAR"
+      echo "DONE"
+    else
+      echo "Error downloading file: expected $NOTION2JEKYLL_SHA1 but found $SHA1"
+      exit 1
+    fi
 fi
 
 java -jar "$NOTION2JEKYLL_JAR" $*
